@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:donate_path/signup_page.dart';
+import 'package:donate_path/org_signup_page.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -66,6 +67,16 @@ class _LoginPageState extends State<LoginPage> {
                   );
                 },
                 child: Text('Don\'t have an account? Sign Up'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => OrgSignupPage()),
+                  );
+                },
+                child: Text(
+                    'If an organization without an account? Organization Signup'),
               ),
             ],
           ),

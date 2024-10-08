@@ -1,20 +1,19 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Ensure you import Firestore
 import 'package:flutter/material.dart';
-import 'package:donate_path/login_page.dart';
 
-class SignUpPage extends StatefulWidget {
+class OrgSignupPage extends StatefulWidget {
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
+class _SignUpPageState extends State<OrgSignupPage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  Future<void> _signUp() async {
+  Future<void> _orgsignUp() async {
     if (_formKey.currentState!.validate()) {
       try {
         // Create user with email and password
@@ -33,7 +32,6 @@ class _SignUpPageState extends State<SignUpPage> {
             .doc(userCredential.user!.uid)
             .set({
           'email': _emailController.text.trim(),
-          'userType': 'normal_user', // Specify the user type here
           'name': _nameController.text,
         });
 
@@ -42,22 +40,13 @@ class _SignUpPageState extends State<SignUpPage> {
           SnackBar(content: Text('Sign up successful! Please sign in.')),
         );
 
-// Navigate to sign-in page and remove all previous routes
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-              builder: (context) =>
-                  LoginPage()), // Replace SignInPage() with your sign-in page widget
-          (Route<dynamic> route) =>
-              false, // This removes all the routes in the stack
-        );
-
         // Navigate to sign-in page
-        // Navigator.of(context).pushReplacementNamed('/signin');
+        Navigator.of(context).pushReplacementNamed('/signin');
       } on FirebaseAuthException catch (e) {
         // Display error message
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(content: Text('Error: ${e.message}')),
-        // );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.message}')),
+        );
       }
     }
   }
@@ -65,7 +54,7 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Sign Up')),
+      appBar: AppBar(title: Text('Organization Sign Up')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -77,35 +66,38 @@ class _SignUpPageState extends State<SignUpPage> {
               // Name field
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(labelText: 'Name'),
-                validator: (value) =>
-                    value!.isEmpty ? 'Please enter your name' : null,
+                decoration: InputDecoration(labelText: 'Organization Name'),
+                validator: (value) => value!.isEmpty
+                    ? 'Please enter your Organization name'
+                    : null,
               ),
               SizedBox(height: 20),
 
               // Email field
               TextFormField(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
-                validator: (value) =>
-                    value!.isEmpty ? 'Please enter your email' : null,
+                decoration: InputDecoration(labelText: 'Organization Email'),
+                validator: (value) => value!.isEmpty
+                    ? 'Please enter your Organization email'
+                    : null,
               ),
               SizedBox(height: 20),
 
               // Password field
               TextFormField(
                 controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
+                decoration: InputDecoration(labelText: 'Organization Password'),
                 obscureText: true,
-                validator: (value) =>
-                    value!.isEmpty ? 'Please enter your password' : null,
+                validator: (value) => value!.isEmpty
+                    ? 'Please enter your Organization password'
+                    : null,
               ),
               SizedBox(height: 20),
 
               // Sign Up button
               ElevatedButton(
-                onPressed: _signUp,
-                child: Text('Sign Up'),
+                onPressed: _orgsignUp,
+                child: Text('Sign Up as a Organization'),
               ),
             ],
           ),

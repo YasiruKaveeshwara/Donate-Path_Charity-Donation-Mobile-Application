@@ -1,0 +1,12 @@
+# Handle all text files, converting CRLF to LF
+* text=auto
+
+# Ensure binary files don't get converted
+*.png binary
+*.jpg binary
+*.gif binary
+*.pdf binary
+
+# Specific settings for certain files (optional)
+*.json text eol=lf
+*.java text eol=lf

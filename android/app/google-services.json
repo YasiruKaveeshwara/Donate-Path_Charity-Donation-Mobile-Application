@@ -12,7 +12,12 @@
           "package_name": "com.example.donate_path"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "252471570619-crpsuqorgf9moke2vdep0tg8v7274gii.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCRTEr0XpeIdsJLnGAkaGk7ubhArcB_zYM"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "252471570619-crpsuqorgf9moke2vdep0tg8v7274gii.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

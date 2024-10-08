@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:donate_path/auth_wrapper.dart';
 import 'package:donate_path/signup_page.dart';
 import 'package:donate_path/login_page.dart';
+import 'package:donate_path/org_signup_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +19,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/signup': (context) => SignUpPage(),
         '/signin': (context) => LoginPage(),
+        '/org_signup': (context) => OrgSignupPage(),
+
         // ... other routes
       },
       theme: ThemeData(

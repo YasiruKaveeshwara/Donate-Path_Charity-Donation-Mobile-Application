@@ -1,4 +1,5 @@
 # Logs
+build
 logs
 *.log
 npm-debug.log*
@@ -6,6 +7,11 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
+
+# Firebase config files
+
+
+android/app/build
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
@@ -128,3 +134,19 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+.dart_tool
+.dart_tool/package_config.json
+.dart_tool/package_config_subset
+.flutter-plugins
+.flutter-plugins-dependencies
+
+android/.gradle/8.3/checksums/checksums.lock
+android/.gradle/8.3/checksums/md5-checksums.bin
+android/.gradle/8.3/checksums/sha1-checksums.bin
+android/.gradle/8.3/executionHistory/executionHistory.lock
+android/.gradle/8.3/fileHashes/fileHashes.bin
+android/.gradle/8.3/fileHashes.lock
+android/.gradle/buildOutputCleanup/buildOutputCleanup.lock
+
+android/app/google-services.json
