@@ -24,6 +24,29 @@ class _VolunteerRegisterPageState extends State<VolunteerRegisterPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  @override
+  void initState() {
+    super.initState();
+    _fetchCurrentUserData();
+  }
+
+  // Function to fetch current user data
+  Future<void> _fetchCurrentUserData() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      // Automatically fill the full name from the user's display name
+      setState(() {
+        _fullNameController.text = user.displayName ?? ''; // Use displayName to fill in the full name
+      });
+      
+      // Optionally, you could also fetch more user data from Firestore if needed
+      // DocumentSnapshot userData = await _firestore.collection('users').doc(user.uid).get();
+      // Additional data handling can go here if necessary
+    } else {
+      print('No user is currently signed in.');
+    }
+  }
+
   // Function to register as a volunteer
   Future<void> _registerVolunteer() async {
     if (_formKey.currentState!.validate()) {
@@ -35,7 +58,7 @@ class _VolunteerRegisterPageState extends State<VolunteerRegisterPage> {
 
           // Add user volunteer details to Firestore database
           await _firestore.collection('volunteers').doc(uid).set({
-            'fullName': _fullNameController.text.trim(),
+            'fullName': _fullNameController.text.trim(), // Save new name if edited
             'nic': _nicController.text.trim(),
             'age': int.parse(_ageController.text.trim()),
             'gender': _gender,

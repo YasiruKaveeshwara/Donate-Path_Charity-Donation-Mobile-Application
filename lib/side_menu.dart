@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'volunteer_register.dart';
 
 class SideMenu extends StatelessWidget {
+  const SideMenu({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
