@@ -1,0 +1,42 @@
+com.example.donate_path.app-jetified-play-services-auth-20.7.0-0 C:\Users\USER\.gradle\caches\transforms-4\10bf9feeba59f7c1173189983273eda1\transformed\jetified-play-services-auth-20.7.0\res
+com.example.donate_path.app-core-1.13.1-1 C:\Users\USER\.gradle\caches\transforms-4\116745d0288614e32692260929f9f25b\transformed\core-1.13.1\res
+com.example.donate_path.app-jetified-firebase-common-21.0.0-2 C:\Users\USER\.gradle\caches\transforms-4\1481db8540a1c6a2989a0d1d4559c094\transformed\jetified-firebase-common-21.0.0\res
+com.example.donate_path.app-jetified-savedstate-1.2.1-3 C:\Users\USER\.gradle\caches\transforms-4\167ecc5773b31e820242841f6ec72107\transformed\jetified-savedstate-1.2.1\res
+com.example.donate_path.app-jetified-core-ktx-1.13.1-4 C:\Users\USER\.gradle\caches\transforms-4\1a9144f85e092df8801efe02313d5598\transformed\jetified-core-ktx-1.13.1\res
+com.example.donate_path.app-jetified-profileinstaller-1.3.1-5 C:\Users\USER\.gradle\caches\transforms-4\236bf44a18a4f9fd28be6709791e352a\transformed\jetified-profileinstaller-1.3.1\res
+com.example.donate_path.app-lifecycle-viewmodel-2.7.0-6 C:\Users\USER\.gradle\caches\transforms-4\364b4e62db333e439a0560760dc77b21\transformed\lifecycle-viewmodel-2.7.0\res
+com.example.donate_path.app-jetified-ads-adservices-1.0.0-beta05-7 C:\Users\USER\.gradle\caches\transforms-4\3cb64515a2d0bdfdc3459114fe2cb670\transformed\jetified-ads-adservices-1.0.0-beta05\res
+com.example.donate_path.app-browser-1.4.0-8 C:\Users\USER\.gradle\caches\transforms-4\518c389cee3dffbd14e2d672327193c1\transformed\browser-1.4.0\res
+com.example.donate_path.app-jetified-lifecycle-process-2.7.0-9 C:\Users\USER\.gradle\caches\transforms-4\6394e08814fa59a067e65904634ffad4\transformed\jetified-lifecycle-process-2.7.0\res
+com.example.donate_path.app-jetified-lifecycle-viewmodel-savedstate-2.7.0-10 C:\Users\USER\.gradle\caches\transforms-4\795b3816631a1a6b78e39c5de8137572\transformed\jetified-lifecycle-viewmodel-savedstate-2.7.0\res
+com.example.donate_path.app-jetified-activity-1.9.2-11 C:\Users\USER\.gradle\caches\transforms-4\7d976660bc743d3fcd5097ab39ca8ea5\transformed\jetified-activity-1.9.2\res
+com.example.donate_path.app-lifecycle-runtime-2.7.0-12 C:\Users\USER\.gradle\caches\transforms-4\8af37a6a1c57dfc8ad592694097721a7\transformed\lifecycle-runtime-2.7.0\res
+com.example.donate_path.app-jetified-play-services-base-18.5.0-13 C:\Users\USER\.gradle\caches\transforms-4\8d01e4dfa35f8a5a9aaaf50e201a26cb\transformed\jetified-play-services-base-18.5.0\res
+com.example.donate_path.app-jetified-credentials-1.2.0-rc01-14 C:\Users\USER\.gradle\caches\transforms-4\8e3c4a200d2d87b66be11d7f7965e7da\transformed\jetified-credentials-1.2.0-rc01\res
+com.example.donate_path.app-jetified-window-1.2.0-15 C:\Users\USER\.gradle\caches\transforms-4\8ed28d8dcab0fc1e4618459f87a11ea3\transformed\jetified-window-1.2.0\res
+com.example.donate_path.app-jetified-lifecycle-livedata-core-ktx-2.7.0-16 C:\Users\USER\.gradle\caches\transforms-4\a09d4ce3135d3cf52abd41b6a4c18b1d\transformed\jetified-lifecycle-livedata-core-ktx-2.7.0\res
+com.example.donate_path.app-jetified-play-services-measurement-api-22.1.2-17 C:\Users\USER\.gradle\caches\transforms-4\a7f8cc476fd1bac34b8426c188667514\transformed\jetified-play-services-measurement-api-22.1.2\res
+com.example.donate_path.app-jetified-tracing-1.2.0-18 C:\Users\USER\.gradle\caches\transforms-4\b21c0d663e04970eb7cf56892f9de7af\transformed\jetified-tracing-1.2.0\res
+com.example.donate_path.app-jetified-annotation-experimental-1.4.0-19 C:\Users\USER\.gradle\caches\transforms-4\b3095ef5eb736a8a53e5a0dc19dd22b4\transformed\jetified-annotation-experimental-1.4.0\res
+com.example.donate_path.app-jetified-window-java-1.2.0-20 C:\Users\USER\.gradle\caches\transforms-4\b4ef8e9f3f24c3802cce76778d44cac5\transformed\jetified-window-java-1.2.0\res
+com.example.donate_path.app-fragment-1.7.1-21 C:\Users\USER\.gradle\caches\transforms-4\bc4e20c39cb08b3bfbc3267582f7e574\transformed\fragment-1.7.1\res
+com.example.donate_path.app-jetified-play-services-basement-18.4.0-22 C:\Users\USER\.gradle\caches\transforms-4\bfb8731738400f341aa82338378a16c6\transformed\jetified-play-services-basement-18.4.0\res
+com.example.donate_path.app-jetified-core-1.0.0-23 C:\Users\USER\.gradle\caches\transforms-4\c223ca3d7db7c028d9e0ba6dae1322cb\transformed\jetified-core-1.0.0\res
+com.example.donate_path.app-jetified-credentials-play-services-auth-1.2.0-rc01-24 C:\Users\USER\.gradle\caches\transforms-4\c7dfeb7c3b8980faae8c2538edbf9f81\transformed\jetified-credentials-play-services-auth-1.2.0-rc01\res
+com.example.donate_path.app-lifecycle-livedata-2.7.0-25 C:\Users\USER\.gradle\caches\transforms-4\d733c8d139919a9c197fbe15d92fd442\transformed\lifecycle-livedata-2.7.0\res
+com.example.donate_path.app-jetified-ads-adservices-java-1.0.0-beta05-26 C:\Users\USER\.gradle\caches\transforms-4\d9797dffd6cae655c0ceb8907ac6aa84\transformed\jetified-ads-adservices-java-1.0.0-beta05\res
+com.example.donate_path.app-jetified-startup-runtime-1.1.1-27 C:\Users\USER\.gradle\caches\transforms-4\e1707e0df5cd55171d664d96177edb74\transformed\jetified-startup-runtime-1.1.1\res
+com.example.donate_path.app-lifecycle-livedata-core-2.7.0-28 C:\Users\USER\.gradle\caches\transforms-4\f19113e1cec817be2c8a9e0a417ce3c4\transformed\lifecycle-livedata-core-2.7.0\res
+com.example.donate_path.app-core-runtime-2.2.0-29 C:\Users\USER\.gradle\caches\transforms-4\f5c85692661c0bc117c77bde0acb9075\transformed\core-runtime-2.2.0\res
+com.example.donate_path.app-debug-30 D:\My GitHub\donate_path\android\app\src\debug\res
+com.example.donate_path.app-main-31 D:\My GitHub\donate_path\android\app\src\main\res
+com.example.donate_path.app-pngs-32 D:\My GitHub\donate_path\build\app\generated\res\pngs\debug
+com.example.donate_path.app-res-33 D:\My GitHub\donate_path\build\app\generated\res\processDebugGoogleServices
+com.example.donate_path.app-resValues-34 D:\My GitHub\donate_path\build\app\generated\res\resValues\debug
+com.example.donate_path.app-packageDebugResources-35 D:\My GitHub\donate_path\build\app\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.example.donate_path.app-packageDebugResources-36 D:\My GitHub\donate_path\build\app\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.example.donate_path.app-debug-37 D:\My GitHub\donate_path\build\app\intermediates\merged_res\debug\mergeDebugResources
+com.example.donate_path.app-debug-38 D:\My GitHub\donate_path\build\firebase_auth\intermediates\packaged_res\debug\packageDebugResources
+com.example.donate_path.app-debug-39 D:\My GitHub\donate_path\build\firebase_core\intermediates\packaged_res\debug\packageDebugResources
+com.example.donate_path.app-debug-40 D:\My GitHub\donate_path\build\flutter_plugin_android_lifecycle\intermediates\packaged_res\debug\packageDebugResources
+com.example.donate_path.app-debug-41 D:\My GitHub\donate_path\build\image_picker_android\intermediates\packaged_res\debug\packageDebugResources
