@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class MyItemsPage extends StatefulWidget {
+  const MyItemsPage({super.key});
+
   @override
   _MyItemsPageState createState() => _MyItemsPageState();
 }

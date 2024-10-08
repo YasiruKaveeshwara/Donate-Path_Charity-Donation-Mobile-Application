@@ -4,6 +4,8 @@ import 'package:donate_path/login_page.dart';
 import 'package:donate_path/home_page.dart';
 
 class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(

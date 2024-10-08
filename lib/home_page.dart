@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'my_items_page.dart';
+import 'side_menu.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -12,10 +15,10 @@ class _HomePageState extends State<HomePage> {
 
   // List of pages corresponding to each bottom navigation bar item
   final List<Widget> _pages = [
-    HomeContent(),
+    const HomeContent(),
     const Center(child: Text('Orphanage Page Content')),
     const Center(child: Text('Events Page Content')),
-    MyItemsPage(),
+    const MyItemsPage(),
     const Center(child: Text('Profile Page Content')),
   ];
 
@@ -25,10 +28,10 @@ class _HomePageState extends State<HomePage> {
       _selectedIndex = index;
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: SideMenu(),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
@@ -62,127 +65,9 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-// class HomeContent extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Stack(
-//       children: [
-//         // Content below the sticky header
-//         Padding(
-//           padding: const EdgeInsets.only(top: 80.0), // Space for the sticky header
-//           child: SingleChildScrollView(
-//             padding: const EdgeInsets.all(16.0),
-//             child: Column(
-//               children: [
-//                 SizedBox(height: 20),
-//                 buildPictureButton(
-//                   context,
-//                   'DONATE ITEMS',
-//                   'assets/images/donate_items.png',
-//                       () {
-//                     // Navigate to Donate Items page or action
-//                   },
-//                 ),
-//                 SizedBox(height: 20),
-//                 buildPictureButton(
-//                   context,
-//                   'ITEMS',
-//                   'assets/images/items.png',
-//                       () {
-//                     // Navigate to Items page or action
-//                   },
-//                 ),
-//                 SizedBox(height: 20),
-//                 Section(
-//                   title: 'Orphanages',
-//                   items: [
-//                     SectionCard(
-//                       title: 'Caring Hearts',
-//                       imagePath: 'assets/images/orphanage.png',
-//                       onTap: () {
-//                         // Navigate to Caring Hearts details or page
-//                       },
-//                     ),
-//                     SectionCard(
-//                       title: 'Tender Care',
-//                       imagePath: 'assets/images/orphanage2.png',
-//                       onTap: () {
-//                         // Navigate to Tender Care details or page
-//                       },
-//                     ),
-//                   ],
-//                 ),
-//                 SizedBox(height: 20),
-//                 Section(
-//                   title: 'Elderly Homes',
-//                   items: [
-//                     SectionCard(
-//                       title: 'Golden Age',
-//                       imagePath: 'assets/images/elderly_home1.png',
-//                       onTap: () {
-//                         // Navigate to Golden Age details or page
-//                       },
-//                     ),
-//                     SectionCard(
-//                       title: 'Silver Care',
-//                       imagePath: 'assets/images/elderly_home2.png',
-//                       onTap: () {
-//                         // Navigate to Silver Care details or page
-//                       },
-//                     ),
-//                   ],
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-//         // Sticky header
-//         Positioned(
-//           top: 22,
-//           left: 0,
-//           right: 0,
-//           child: Container(
-//             color: Colors.white,
-//             padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
-//             child: Row(
-//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//               children: [
-//                 Row(
-//                   children: [
-//                     IconButton(
-//                       icon: Icon(Icons.menu),
-//                       onPressed: () {},
-//                     ),
-//                     Text(
-//                       'WELCOME',
-//                       style: TextStyle(
-//                         fontSize: 24,
-//                         fontWeight: FontWeight.bold,
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 Row(
-//                   children: [
-//                     IconButton(
-//                       icon: Icon(Icons.notifications),
-//                       onPressed: () {},
-//                     ),
-//                     CircleAvatar(
-//                       radius: 20,
-//                       backgroundImage: NetworkImage('https://via.placeholder.com/150'),
-//                     ),
-//                   ],
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-
 class HomeContent extends StatefulWidget {
+  const HomeContent({super.key});
+
   @override
   _HomeContentState createState() => _HomeContentState();
 }
@@ -199,13 +84,11 @@ class _HomeContentState extends State<HomeContent> {
   Future<void> _logout(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
-      // The AuthWrapper will handle navigation after sign out
       _toggleDropdown(); // Close the dropdown after logout
     } catch (e) {
       print("Error signing out: $e");
-      // Optionally show an error message to the user
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to sign out. Please try again.')),
+        const SnackBar(content: Text('Failed to sign out. Please try again.')),
       );
     }
   }
@@ -214,74 +97,72 @@ class _HomeContentState extends State<HomeContent> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Content below the sticky header
+        // Main content with space for the sticky header
         Padding(
-          padding:
-              const EdgeInsets.only(top: 80.0), // Space for the sticky header
+          padding: const EdgeInsets.only(top: 80.0), // Space for sticky header
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-                children: [
-                  SizedBox(height: 20),
-                  buildPictureButton(
-                    context,
-                    'DONATE ITEMS',
-                    'assets/images/donate_items.jpg',
-                        () {
-                      // Navigate to Donate Items page or action
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  buildPictureButton(
-                    context,
-                    'ITEMS',
-                    'assets/images/stationery.png',
-                        () {
-                      // Navigate to Items page or action
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  Section(
-                    title: 'Orphanages',
-                    items: [
-                      SectionCard(
-                        title: 'Caring Hearts',
-                        imagePath: 'assets/images/orphanage.png',
-                        onTap: () {
-                          // Navigate to Caring Hearts details or page
-                        },
-                      ),
-                      SectionCard(
-                        title: 'Tender Care',
-                        imagePath: 'assets/images/orphanage.png',
-                        onTap: () {
-                          // Navigate to Tender Care details or page
-                        },
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  Section(
-                    title: 'Elderly Homes',
-                    items: [
-                      SectionCard(
-                        title: 'Golden Age',
-                        imagePath: 'assets/images/orphanage.png',
-                        onTap: () {
-                          // Navigate to Golden Age details or page
-                        },
-                      ),
-                      SectionCard(
-                        title: 'Silver Care',
-                        imagePath: 'assets/images/orphanage.png',
-                        onTap: () {
-                          // Navigate to Silver Care details or page
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+              children: [
+                const SizedBox(height: 20),
+                buildPictureButton(
+                  context,
+                  'DONATE ITEMS',
+                  'assets/images/donate_items.jpg',
+                  () {
+                    // Navigate to Donate Items page or action
+                  },
+                ),
+                const SizedBox(height: 20),
+                buildPictureButton(
+                  context,
+                  'ITEMS',
+                  'assets/images/stationery.png',
+                  () {
+                    // Navigate to Items page or action
+                  },
+                ),
+                const SizedBox(height: 20),
+                Section(
+                  title: 'Orphanages',
+                  items: [
+                    SectionCard(
+                      title: 'Caring Hearts',
+                      imagePath: 'assets/images/orphanage.png',
+                      onTap: () {
+                      },
+                    ),
+                    SectionCard(
+                      title: 'Tender Care',
+                      imagePath: 'assets/images/orphanage.png',
+                      onTap: () {
+                        // Navigate to Tender Care details or page
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Section(
+                  title: 'Elderly Homes',
+                  items: [
+                    SectionCard(
+                      title: 'Golden Age',
+                      imagePath: 'assets/images/orphanage.png',
+                      onTap: () {
+                        // Navigate to Golden Age details or page
+                      },
+                    ),
+                    SectionCard(
+                      title: 'Silver Care',
+                      imagePath: 'assets/images/orphanage.png',
+                      onTap: () {
+                        // Navigate to Silver Care details or page
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
         // Sticky header with profile icon
@@ -291,17 +172,20 @@ class _HomeContentState extends State<HomeContent> {
           right: 0,
           child: Container(
             color: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.menu),
-                      onPressed: () {},
+                      icon: const Icon(Icons.menu),
+                      onPressed: () {
+                        Scaffold.of(context).openDrawer();
+                      },
                     ),
-                    Text(
+                    const Text(
                       'WELCOME',
                       style: TextStyle(
                         fontSize: 24,
@@ -313,14 +197,17 @@ class _HomeContentState extends State<HomeContent> {
                 Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.notifications),
-                      onPressed: () {},
+                      icon: const Icon(Icons.notifications),
+                      onPressed: () {
+                        // Notifications functionality
+                      },
                     ),
                     GestureDetector(
                       onTap: _toggleDropdown,
-                      child: CircleAvatar(
+                      child: const CircleAvatar(
                         radius: 20,
-                        backgroundImage: NetworkImage('https://via.placeholder.com/150'),
+                        backgroundImage:
+                            NetworkImage('https://via.placeholder.com/150'),
                       ),
                     ),
                   ],
@@ -342,36 +229,35 @@ class _HomeContentState extends State<HomeContent> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
                       child: Text('John Doe',
                           style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
                       child: Text('john.doe@example.com',
                           style: TextStyle(color: Colors.grey)),
                     ),
-                    Divider(),
+                    const Divider(),
                     ListTile(
-                      leading: Icon(Icons.person),
-                      title: Text('Profile'),
+                      leading: const Icon(Icons.person),
+                      title: const Text('Profile'),
                       onTap: () {
                         // Navigate to Profile Page
                       },
                     ),
                     ListTile(
-                      leading: Icon(Icons.settings),
-                      title: Text('Settings'),
+                      leading: const Icon(Icons.settings),
+                      title: const Text('Settings'),
                       onTap: () {
                         // Navigate to Settings Page
                       },
                     ),
                     ListTile(
-                      leading: Icon(Icons.logout),
-                      title: Text('Logout'),
+                      leading: const Icon(Icons.logout),
+                      title: const Text('Logout'),
                       onTap: () {
-                        // Handle Logout Action
                         _logout(context);
                       },
                     ),
@@ -386,8 +272,8 @@ class _HomeContentState extends State<HomeContent> {
 }
 
 // Reusable Widget for Picture Button
-Widget buildPictureButton(BuildContext context, String label, String imagePath,
-    VoidCallback onPressed) {
+Widget buildPictureButton(
+    BuildContext context, String label, String imagePath, VoidCallback onPressed) {
   return GestureDetector(
     onTap: onPressed,
     child: Container(
@@ -404,7 +290,7 @@ Widget buildPictureButton(BuildContext context, String label, String imagePath,
       child: Center(
         child: Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
             color: Colors.white, // Ensure text is readable over image
@@ -419,7 +305,7 @@ class Section extends StatelessWidget {
   final String title;
   final List<SectionCard> items;
 
-  Section({required this.title, required this.items});
+  const Section({super.key, required this.title, required this.items});
 
   @override
   Widget build(BuildContext context) {
@@ -428,12 +314,12 @@ class Section extends StatelessWidget {
       children: [
         Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: items,
@@ -448,8 +334,12 @@ class SectionCard extends StatelessWidget {
   final String imagePath;
   final VoidCallback onTap;
 
-  SectionCard(
-      {required this.title, required this.imagePath, required this.onTap});
+  const SectionCard({
+    super.key,
+    required this.title,
+    required this.imagePath,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -465,23 +355,17 @@ class SectionCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                imagePath,
-                height: 80,
-                width: 80,
-                fit: BoxFit.cover,
-              ),
+            Image.asset(
+              imagePath,
+              width: 80,
+              height: 80,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               title,
-              style: TextStyle(
-                fontSize: 16,
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
               ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),
