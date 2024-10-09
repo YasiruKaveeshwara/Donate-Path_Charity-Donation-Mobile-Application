@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'my_items_page.dart';
+import 'org_items_page.dart';
+import 'org_events_page.dart';
+import 'org_profile_page.dart';
+import 'org_request_form.dart';
 
 class OrgHomePage extends StatefulWidget {
   @override
@@ -13,10 +16,9 @@ class _OrgHomePageState extends State<OrgHomePage> {
   // List of pages corresponding to each bottom navigation bar item
   final List<Widget> _pages = [
     HomeContent(),
-    const Center(child: Text('Orphanage Page Content')),
-    const Center(child: Text('Events Page Content')),
     MyItemsPage(),
-    const Center(child: Text('Profile Page Content')),
+    OrgEventsPage(),
+    OrgProfilePage(),
   ];
 
   // Handler for bottom navigation bar tap
@@ -39,19 +41,15 @@ class _OrgHomePageState extends State<OrgHomePage> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.house_siding), // Orphanage
-            label: 'Orphanages',
+            icon: Icon(Icons.inventory), // Orphanage
+            label: 'Items',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.event),
+            icon: Icon(Icons.event), //events
             label: 'Events',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.inventory), // My Items
-            label: 'My Items',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.person), //profile
             label: 'Profile',
           ),
         ],
@@ -61,126 +59,6 @@ class _OrgHomePageState extends State<OrgHomePage> {
     );
   }
 }
-
-// class HomeContent extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Stack(
-//       children: [
-//         // Content below the sticky header
-//         Padding(
-//           padding: const EdgeInsets.only(top: 80.0), // Space for the sticky header
-//           child: SingleChildScrollView(
-//             padding: const EdgeInsets.all(16.0),
-//             child: Column(
-//               children: [
-//                 SizedBox(height: 20),
-//                 buildPictureButton(
-//                   context,
-//                   'DONATE ITEMS',
-//                   'assets/images/donate_items.png',
-//                       () {
-//                     // Navigate to Donate Items page or action
-//                   },
-//                 ),
-//                 SizedBox(height: 20),
-//                 buildPictureButton(
-//                   context,
-//                   'ITEMS',
-//                   'assets/images/items.png',
-//                       () {
-//                     // Navigate to Items page or action
-//                   },
-//                 ),
-//                 SizedBox(height: 20),
-//                 Section(
-//                   title: 'Orphanages',
-//                   items: [
-//                     SectionCard(
-//                       title: 'Caring Hearts',
-//                       imagePath: 'assets/images/orphanage.png',
-//                       onTap: () {
-//                         // Navigate to Caring Hearts details or page
-//                       },
-//                     ),
-//                     SectionCard(
-//                       title: 'Tender Care',
-//                       imagePath: 'assets/images/orphanage2.png',
-//                       onTap: () {
-//                         // Navigate to Tender Care details or page
-//                       },
-//                     ),
-//                   ],
-//                 ),
-//                 SizedBox(height: 20),
-//                 Section(
-//                   title: 'Elderly Homes',
-//                   items: [
-//                     SectionCard(
-//                       title: 'Golden Age',
-//                       imagePath: 'assets/images/elderly_home1.png',
-//                       onTap: () {
-//                         // Navigate to Golden Age details or page
-//                       },
-//                     ),
-//                     SectionCard(
-//                       title: 'Silver Care',
-//                       imagePath: 'assets/images/elderly_home2.png',
-//                       onTap: () {
-//                         // Navigate to Silver Care details or page
-//                       },
-//                     ),
-//                   ],
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-//         // Sticky header
-//         Positioned(
-//           top: 22,
-//           left: 0,
-//           right: 0,
-//           child: Container(
-//             color: Colors.white,
-//             padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
-//             child: Row(
-//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//               children: [
-//                 Row(
-//                   children: [
-//                     IconButton(
-//                       icon: Icon(Icons.menu),
-//                       onPressed: () {},
-//                     ),
-//                     Text(
-//                       'WELCOME',
-//                       style: TextStyle(
-//                         fontSize: 24,
-//                         fontWeight: FontWeight.bold,
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 Row(
-//                   children: [
-//                     IconButton(
-//                       icon: Icon(Icons.notifications),
-//                       onPressed: () {},
-//                     ),
-//                     CircleAvatar(
-//                       radius: 20,
-//                       backgroundImage: NetworkImage('https://via.placeholder.com/150'),
-//                     ),
-//                   ],
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ],
-//     );
-//   }
 
 class HomeContent extends StatefulWidget {
   @override
@@ -222,22 +100,17 @@ class _HomeContentState extends State<HomeContent> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                SizedBox(height: 20),
+                SizedBox(height: 30),
                 buildPictureButton(
                   context,
-                  'DONATE ITEMS',
+                  'REQUEST DONATIONS',
                   'assets/images/donate_items.jpg',
                   () {
-                    // Navigate to Donate Items page or action
-                  },
-                ),
-                SizedBox(height: 20),
-                buildPictureButton(
-                  context,
-                  'ITEMS',
-                  'assets/images/stationery.png',
-                  () {
-                    // Navigate to Items page or action
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => DonationRequestForm()),
+                    );
                   },
                 ),
                 SizedBox(height: 20),

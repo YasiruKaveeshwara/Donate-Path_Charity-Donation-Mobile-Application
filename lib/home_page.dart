@@ -221,67 +221,67 @@ class _HomeContentState extends State<HomeContent> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-                children: [
-                  SizedBox(height: 20),
-                  buildPictureButton(
-                    context,
-                    'DONATE ITEMS',
-                    'assets/images/donate_items.jpg',
-                        () {
-                      // Navigate to Donate Items page or action
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  buildPictureButton(
-                    context,
-                    'ITEMS',
-                    'assets/images/stationery.png',
-                        () {
-                      // Navigate to Items page or action
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  Section(
-                    title: 'Orphanages',
-                    items: [
-                      SectionCard(
-                        title: 'Caring Hearts',
-                        imagePath: 'assets/images/orphanage.png',
-                        onTap: () {
-                          // Navigate to Caring Hearts details or page
-                        },
-                      ),
-                      SectionCard(
-                        title: 'Tender Care',
-                        imagePath: 'assets/images/orphanage.png',
-                        onTap: () {
-                          // Navigate to Tender Care details or page
-                        },
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  Section(
-                    title: 'Elderly Homes',
-                    items: [
-                      SectionCard(
-                        title: 'Golden Age',
-                        imagePath: 'assets/images/orphanage.png',
-                        onTap: () {
-                          // Navigate to Golden Age details or page
-                        },
-                      ),
-                      SectionCard(
-                        title: 'Silver Care',
-                        imagePath: 'assets/images/orphanage.png',
-                        onTap: () {
-                          // Navigate to Silver Care details or page
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+              children: [
+                SizedBox(height: 20),
+                buildPictureButton(
+                  context,
+                  'DONATE ITEMS',
+                  'assets/images/donate_items.jpg',
+                  () {
+                    // Navigate to Donate Items page or action
+                  },
+                ),
+                SizedBox(height: 20),
+                buildPictureButton(
+                  context,
+                  'ITEMS',
+                  'assets/images/stationery.png',
+                  () {
+                    // Navigate to Items page or action
+                  },
+                ),
+                SizedBox(height: 20),
+                Section(
+                  title: 'Orphanages',
+                  items: [
+                    SectionCard(
+                      title: 'Caring Hearts',
+                      imagePath: 'assets/images/orphanage.png',
+                      onTap: () {
+                        // Navigate to Caring Hearts details or page
+                      },
+                    ),
+                    SectionCard(
+                      title: 'Tender Care',
+                      imagePath: 'assets/images/orphanage.png',
+                      onTap: () {
+                        // Navigate to Tender Care details or page
+                      },
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20),
+                Section(
+                  title: 'Elderly Homes',
+                  items: [
+                    SectionCard(
+                      title: 'Golden Age',
+                      imagePath: 'assets/images/orphanage.png',
+                      onTap: () {
+                        // Navigate to Golden Age details or page
+                      },
+                    ),
+                    SectionCard(
+                      title: 'Silver Care',
+                      imagePath: 'assets/images/orphanage.png',
+                      onTap: () {
+                        // Navigate to Silver Care details or page
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
         // Sticky header with profile icon
@@ -291,7 +291,8 @@ class _HomeContentState extends State<HomeContent> {
           right: 0,
           child: Container(
             color: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -320,7 +321,8 @@ class _HomeContentState extends State<HomeContent> {
                       onTap: _toggleDropdown,
                       child: CircleAvatar(
                         radius: 20,
-                        backgroundImage: NetworkImage('https://via.placeholder.com/150'),
+                        backgroundImage:
+                            NetworkImage('https://via.placeholder.com/150'),
                       ),
                     ),
                   ],

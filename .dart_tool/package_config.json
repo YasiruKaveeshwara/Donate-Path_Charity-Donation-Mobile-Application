@@ -134,6 +134,24 @@
       "languageVersion": "3.4"
     },
     {
+      "name": "firebase_storage",
+      "rootUri": "file:///C:/Users/kavee/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_storage-12.3.3",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "firebase_storage_platform_interface",
+      "rootUri": "file:///C:/Users/kavee/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_storage_platform_interface-5.1.31",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "firebase_storage_web",
+      "rootUri": "file:///C:/Users/kavee/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_storage_web-3.10.3",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
       "name": "flutter",
       "rootUri": "file:///C:/flutter/flutter/packages/flutter",
       "packageUri": "lib/",
@@ -356,7 +374,7 @@
       "languageVersion": "3.5"
     }
   ],
-  "generated": "2024-10-08T16:52:42.269024Z",
+  "generated": "2024-10-08T22:45:43.774099Z",
   "generator": "pub",
   "generatorVersion": "3.5.3",
   "flutterRoot": "file:///C:/flutter/flutter",
