@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io'; // Import for File
 
 class DonationRequestForm extends StatefulWidget {
@@ -25,6 +26,7 @@ class _DonationRequestFormState extends State<DonationRequestForm> {
     'Furniture',
     'Electronics',
     'Shoes',
+    'Bags',
     'Stationary',
     'Other'
   ];
@@ -34,6 +36,15 @@ class _DonationRequestFormState extends State<DonationRequestForm> {
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
+      // Get the current user
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No user logged in. Please log in first.')),
+        );
+        return;
+      }
+
       // Get the form data
       String itemName = _itemNameController.text;
       String category = _selectedCategory!;
@@ -42,13 +53,20 @@ class _DonationRequestFormState extends State<DonationRequestForm> {
       // Upload image and get the URL
       String imageUrl = await _uploadImage();
 
+      if (imageUrl.isEmpty) {
+        // If the image upload failed, stop the form submission
+        return;
+      }
+
       // Create a map of the data
       Map<String, dynamic> requestData = {
+        'userId': user.uid, // Add the user ID to the data
         'itemName': itemName,
         'category': category,
         'description': description,
         'quantity': _quantity,
         'imageUrl': imageUrl, // Add image URL to the data
+        'timestamp': FieldValue.serverTimestamp(), // Add a timestamp
       };
 
       // Save to Firestore
@@ -73,26 +91,58 @@ class _DonationRequestFormState extends State<DonationRequestForm> {
   Future<String> _uploadImage() async {
     if (_imageFile == null) return '';
 
-    // Create a unique file name for the image
-    String fileName = DateTime.now().millisecondsSinceEpoch.toString() + '.jpg';
+    try {
+      // Create a unique file name for the image
+      String fileName =
+          DateTime.now().millisecondsSinceEpoch.toString() + '.jpg';
 
-    // Create a reference to the Firebase Storage
-    Reference ref =
-        FirebaseStorage.instance.ref().child('donation_images/$fileName');
+      // Create a reference to the Firebase Storage
+      Reference ref =
+          FirebaseStorage.instance.ref().child('donation_images/$fileName');
 
-    // Upload the image to Firebase Storage
-    await ref.putFile(File(_imageFile!.path));
+      // Upload the image to Firebase Storage
+      UploadTask uploadTask = ref.putFile(File(_imageFile!.path));
 
-    // Get the download URL
-    String downloadUrl = await ref.getDownloadURL();
-    return downloadUrl;
+      // Wait for the upload to complete and then get the download URL
+      TaskSnapshot snapshot = await uploadTask;
+
+      // Get the download URL
+      String downloadUrl = await snapshot.ref.getDownloadURL();
+      return downloadUrl;
+    } on FirebaseException catch (e) {
+      // Handle Firebase-specific errors
+      print('Firebase Storage Error: ${e.message}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error uploading image: ${e.message}')),
+      );
+      return '';
+    } catch (e) {
+      // Handle any other errors
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('An unexpected error occurred. Please try again.')),
+      );
+      return '';
+    }
   }
 
   Future<void> _pickImage() async {
-    XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      _imageFile = image; // Store the selected image
-    });
+    try {
+      XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        setState(() {
+          _imageFile = image; // Store the selected image
+        });
+      } else {
+        print('No image selected.');
+      }
+    } catch (e) {
+      print('Error picking image: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error picking image. Please try again.')),
+      );
+    }
   }
 
   @override
@@ -192,7 +242,12 @@ class _DonationRequestFormState extends State<DonationRequestForm> {
               if (_imageFile != null)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: Image.file(File(_imageFile!.path), height: 100),
+                  child: Image.file(
+                    File(_imageFile!.path),
+                    height: 100,
+                    width: 100,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               SizedBox(height: 20),
               ElevatedButton(
