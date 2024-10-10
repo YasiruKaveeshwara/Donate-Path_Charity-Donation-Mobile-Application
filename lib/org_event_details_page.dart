@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'org_home_page.dart'; // Import OrgHomePage if it's in another file
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'org_home_page.dart';
 
 class OrgEventDetailsPage extends StatelessWidget {
   final String title;
@@ -9,7 +10,7 @@ class OrgEventDetailsPage extends StatelessWidget {
   final int completion;
   final String organizerPhone;
   final List<String> contributors;
-  final List<Map<String, dynamic>> items; // New field for event items
+  final List<Map<String, dynamic>> items;
 
   // Constructor to pass event details
   OrgEventDetailsPage({
@@ -20,8 +21,52 @@ class OrgEventDetailsPage extends StatelessWidget {
     required this.completion,
     required this.organizerPhone,
     required this.contributors,
-    required this.items, // Add items as a parameter
+    required this.items,
   });
+
+  // Function to update the status of the event in Firestore
+  Future<void> _completeEvent(BuildContext context) async {
+    try {
+      // Fetch the event document using the event name (title)
+      QuerySnapshot eventSnapshot = await FirebaseFirestore.instance
+          .collection('events')
+          .where('eventName', isEqualTo: title)
+          .get();
+
+      if (eventSnapshot.docs.isNotEmpty) {
+        // Get the document ID
+        String eventId = eventSnapshot.docs.first.id;
+
+        // Update the status to 'completed'
+        await FirebaseFirestore.instance
+            .collection('events')
+            .doc(eventId)
+            .update({'status': 'completed'});
+
+        // Show a success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Event marked as complete!')),
+        );
+
+        // Navigate back to the home page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => OrgHomePage()),
+        );
+      } else {
+        // Show a message if the event is not found
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Event not found.')),
+        );
+      }
+    } catch (e) {
+      print('Error completing event: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Error completing the event. Please try again.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -186,6 +231,19 @@ class OrgEventDetailsPage extends StatelessWidget {
                   ),
                 );
               }).toList(),
+            ),
+            SizedBox(height: 24.0),
+
+            // Complete Button
+            Center(
+              child: ElevatedButton(
+                onPressed: () => _completeEvent(context),
+                child: Text('Mark as Complete'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                ),
+              ),
             ),
           ],
         ),

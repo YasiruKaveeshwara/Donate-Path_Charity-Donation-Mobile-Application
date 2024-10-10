@@ -106,6 +106,17 @@ dist
 # vuepress build output
 .vuepress/dist
 
+.android/.gradle
+.android/**/gradle
+
+# Ignore Gradle files
+.gradle/
+android/.gradle/
+
+# Other commonly ignored files
+/build
+.flutter-plugins-dependencies
+
 # vuepress v2.x temp and cache directory
 .temp
 .cache
