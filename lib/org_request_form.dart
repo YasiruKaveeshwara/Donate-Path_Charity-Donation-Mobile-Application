@@ -1,11 +1,17 @@
+import 'package:donate_path/org_items_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:io'; // Import for File
+import 'dart:io';
+import 'org_home_page.dart';
 
 class DonationRequestForm extends StatefulWidget {
+  final int selectedIndex;
+
+  DonationRequestForm({this.selectedIndex = 1});
+
   @override
   _DonationRequestFormState createState() => _DonationRequestFormState();
 }
@@ -15,11 +21,7 @@ class _DonationRequestFormState extends State<DonationRequestForm> {
   final TextEditingController _itemNameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
-
-  // Variable to store the selected image file
   XFile? _imageFile;
-
-  // List of categories for the dropdown
   final List<String> _categories = [
     'Food',
     'Clothes',
@@ -27,16 +29,14 @@ class _DonationRequestFormState extends State<DonationRequestForm> {
     'Electronics',
     'Shoes',
     'Bags',
-    'Stationary',
+    'Stationery',
     'Other'
   ];
-
-  int _quantity = 1; // Default quantity
-  String? _selectedCategory; // Variable to store the selected category
+  int _quantity = 1;
+  String? _selectedCategory;
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      // Get the current user
       User? user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -45,46 +45,30 @@ class _DonationRequestFormState extends State<DonationRequestForm> {
         return;
       }
 
-      // Get the form data
       String itemName = _itemNameController.text;
       String category = _selectedCategory!;
       String description = _descriptionController.text;
-
-      // Upload image and get the URL
       String imageUrl = await _uploadImage();
 
-      if (imageUrl.isEmpty) {
-        // If the image upload failed, stop the form submission
-        return;
-      }
+      if (imageUrl.isEmpty) return;
 
-      // Create a map of the data
       Map<String, dynamic> requestData = {
-        'userId': user.uid, // Add the user ID to the data
+        'userId': user.uid,
         'itemName': itemName,
         'category': category,
         'description': description,
         'quantity': _quantity,
-        'imageUrl': imageUrl, // Add image URL to the data
-        'timestamp': FieldValue.serverTimestamp(), // Add a timestamp
+        'imageUrl': imageUrl,
+        'timestamp': FieldValue.serverTimestamp(),
       };
 
-      // Save to Firestore
       await FirebaseFirestore.instance.collection('requests').add(requestData);
 
-      // Optionally, clear the form or navigate back
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Donation request submitted successfully!')),
       );
 
-      // Clear the form
-      _itemNameController.clear();
-      _descriptionController.clear();
-      setState(() {
-        _selectedCategory = null;
-        _quantity = 1;
-        _imageFile = null; // Reset the image
-      });
+      _clearForm();
     }
   }
 
@@ -92,39 +76,31 @@ class _DonationRequestFormState extends State<DonationRequestForm> {
     if (_imageFile == null) return '';
 
     try {
-      // Create a unique file name for the image
       String fileName =
           DateTime.now().millisecondsSinceEpoch.toString() + '.jpg';
-
-      // Create a reference to the Firebase Storage
       Reference ref =
           FirebaseStorage.instance.ref().child('donation_images/$fileName');
-
-      // Upload the image to Firebase Storage
       UploadTask uploadTask = ref.putFile(File(_imageFile!.path));
-
-      // Wait for the upload to complete and then get the download URL
       TaskSnapshot snapshot = await uploadTask;
-
-      // Get the download URL
       String downloadUrl = await snapshot.ref.getDownloadURL();
       return downloadUrl;
-    } on FirebaseException catch (e) {
-      // Handle Firebase-specific errors
-      print('Firebase Storage Error: ${e.message}');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error uploading image: ${e.message}')),
-      );
-      return '';
     } catch (e) {
-      // Handle any other errors
       print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('An unexpected error occurred. Please try again.')),
+        SnackBar(content: Text('Error uploading image. Please try again.')),
       );
       return '';
     }
+  }
+
+  void _clearForm() {
+    _itemNameController.clear();
+    _descriptionController.clear();
+    setState(() {
+      _selectedCategory = null;
+      _quantity = 1;
+      _imageFile = null;
+    });
   }
 
   Future<void> _pickImage() async {
@@ -132,10 +108,8 @@ class _DonationRequestFormState extends State<DonationRequestForm> {
       XFile? image = await _picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
         setState(() {
-          _imageFile = image; // Store the selected image
+          _imageFile = image;
         });
-      } else {
-        print('No image selected.');
       }
     } catch (e) {
       print('Error picking image: $e');
@@ -145,127 +119,248 @@ class _DonationRequestFormState extends State<DonationRequestForm> {
     }
   }
 
+  void _onItemTapped(int index) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => OrgItemsPage(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Request Donations'),
+        backgroundColor: const Color.fromARGB(255, 216, 241, 218),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _itemNameController,
-                decoration: InputDecoration(labelText: 'Item Name'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter the item name';
-                  }
-                  return null;
-                },
-              ),
-              // Dropdown for Category
-              DropdownButtonFormField<String>(
-                value: _selectedCategory,
-                decoration: InputDecoration(labelText: 'Category'),
-                items: _categories.map((String category) {
-                  return DropdownMenuItem<String>(
-                    value: category,
-                    child: Text(category),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedCategory = newValue; // Update selected category
-                  });
-                },
-                validator: (value) {
-                  if (value == null) {
-                    return 'Please select a category';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: InputDecoration(labelText: 'Item Description'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter the item description';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 20),
-              // Quantity Selector
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Quantity: $_quantity',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.remove),
-                        onPressed: () {
-                          setState(() {
-                            if (_quantity > 1) {
-                              _quantity--; // Decrease quantity
-                            }
-                          });
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.add),
-                        onPressed: () {
-                          setState(() {
-                            _quantity++; // Increase quantity
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-              // Button to pick an image
-              ElevatedButton(
-                onPressed: _pickImage,
-                child: Text('Pick Image'),
-              ),
-              // Display the selected image
-              if (_imageFile != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: Image.file(
-                    File(_imageFile!.path),
-                    height: 100,
-                    width: 100,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _submitForm,
-                child: Text('Submit Request'),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(
-                      context); // Navigate back to the previous screen
-                },
-                child: Text('Request More'),
-              ),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(),
+                SizedBox(height: 20),
+                _buildTextField('Item Name', _itemNameController),
+                _buildDropdown(),
+                _buildTextField('Item Description', _descriptionController,
+                    maxLines: 3),
+                SizedBox(height: 20),
+                _buildQuantitySelector(),
+                SizedBox(height: 20),
+                _buildImagePicker(),
+                if (_imageFile != null) _buildImagePreview(),
+                SizedBox(height: 20),
+                _buildButtonRow(),
+              ],
+            ),
           ),
         ),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: widget.selectedIndex,
+        onTap: _onItemTapped,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.inventory),
+            label: 'Items',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.event),
+            label: 'Events',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+        selectedItemColor: Colors.green,
+        unselectedItemColor: Colors.grey,
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      width: double.infinity,
+      height: 150,
+      decoration: BoxDecoration(
+        color: Colors.green[100],
+        borderRadius: BorderRadius.circular(10),
+        image: DecorationImage(
+          image: AssetImage('assets/images/request_items_banner.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(String label, TextEditingController controller,
+      {int maxLines = 1}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: TextFormField(
+        controller: controller,
+        maxLines: maxLines,
+        decoration: InputDecoration(
+          labelText: label,
+          filled: true,
+          fillColor: Colors.green[50],
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            borderSide: BorderSide.none,
+          ),
+        ),
+        validator: (value) {
+          if (value!.isEmpty) {
+            return 'Please enter $label';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  Widget _buildDropdown() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: DropdownButtonFormField<String>(
+        value: _selectedCategory,
+        decoration: InputDecoration(
+          labelText: 'Select Category',
+          filled: true,
+          fillColor: Colors.green[50],
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            borderSide: BorderSide.none,
+          ),
+        ),
+        items: _categories.map((String category) {
+          return DropdownMenuItem<String>(
+            value: category,
+            child: Text(category),
+          );
+        }).toList(),
+        onChanged: (String? newValue) {
+          setState(() {
+            _selectedCategory = newValue;
+          });
+        },
+        validator: (value) {
+          if (value == null) {
+            return 'Please select a category';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  Widget _buildQuantitySelector() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          'Quantity: $_quantity',
+          style: TextStyle(fontSize: 16),
+        ),
+        Row(
+          children: [
+            IconButton(
+              icon: Icon(Icons.remove, color: Colors.green),
+              onPressed: () {
+                setState(() {
+                  if (_quantity > 1) _quantity--;
+                });
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.add, color: Colors.green),
+              onPressed: () {
+                setState(() {
+                  _quantity++;
+                });
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildImagePicker() {
+    return ElevatedButton.icon(
+      onPressed: _pickImage,
+      icon: Icon(Icons.image, color: Colors.white),
+      label: Text('Pick Image'),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.green[100],
+      ),
+    );
+  }
+
+  Widget _buildImagePreview() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8.0),
+        child: Image.file(
+          File(_imageFile!.path),
+          height: 100,
+          width: 100,
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildButtonRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text(
+              'Request More',
+              style: TextStyle(color: Colors.white), // Set text color to white
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green[300],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8), // Reduced button radius
+              ),
+            ),
+          ),
+        ),
+        SizedBox(width: 16),
+        Expanded(
+          child: ElevatedButton(
+            onPressed: _submitForm,
+            child: Text(
+              'Submit Request',
+              style: TextStyle(color: Colors.white), // Set text color to white
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8), // Reduced button radius
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

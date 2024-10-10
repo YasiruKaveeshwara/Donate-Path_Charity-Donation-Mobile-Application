@@ -8,6 +8,45 @@ class MyItemsPage extends StatefulWidget {
 
 class _MyItemsPageState extends State<MyItemsPage> {
   bool _isDropdownVisible = false;
+  String? _selectedCategory;
+
+  List<Map<String, String>> items = [
+    {
+      'title': 'Stationary',
+      'category': 'Stationary',
+      'image': 'https://via.placeholder.com/150'
+    },
+    {
+      'title': 'Shoes',
+      'category': 'Shoes',
+      'image': 'https://via.placeholder.com/150'
+    },
+    {
+      'title': 'Electronics',
+      'category': 'Electronics',
+      'image': 'https://via.placeholder.com/150'
+    },
+    {
+      'title': 'Bags',
+      'category': 'Bags',
+      'image': 'https://via.placeholder.com/150'
+    },
+    {
+      'title': 'Food',
+      'category': 'Food',
+      'image': 'https://via.placeholder.com/150'
+    },
+    {
+      'title': 'Furniture',
+      'category': 'Furniture',
+      'image': 'https://via.placeholder.com/150'
+    },
+    {
+      'title': 'Clothes',
+      'category': 'Clothes',
+      'image': 'https://via.placeholder.com/150'
+    },
+  ];
 
   void _toggleDropdown() {
     setState(() {
@@ -18,11 +57,8 @@ class _MyItemsPageState extends State<MyItemsPage> {
   Future<void> _logout(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
-      // The AuthWrapper will handle navigation after sign out
-      _toggleDropdown(); // Close the dropdown after logout
+      _toggleDropdown();
     } catch (e) {
-      print("Error signing out: $e");
-      // Optionally show an error message to the user
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to sign out. Please try again.')),
       );
@@ -34,7 +70,6 @@ class _MyItemsPageState extends State<MyItemsPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Content below the sticky header
           Padding(
             padding: const EdgeInsets.only(top: 80.0),
             child: SingleChildScrollView(
@@ -64,13 +99,17 @@ class _MyItemsPageState extends State<MyItemsPage> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        buildCategoryImage('assets/images/stationery.png', 'Stationary'),
+                        buildCategoryImage(
+                            'assets/images/stationery.png', 'Stationary'),
                         buildCategoryImage('assets/images/shoes.png', 'Shoes'),
-                        buildCategoryImage('assets/images/electronics.png', 'Electronics'),
+                        buildCategoryImage(
+                            'assets/images/electronics.png', 'Electronics'),
                         buildCategoryImage('assets/images/bags.png', 'Bags'),
                         buildCategoryImage('assets/images/food.png', 'Food'),
-                        buildCategoryImage('assets/images/furniture.png', 'Furniture'),
-                        buildCategoryImage('assets/images/cloths.png', 'Clothes'),
+                        buildCategoryImage(
+                            'assets/images/furniture.png', 'Furniture'),
+                        buildCategoryImage(
+                            'assets/images/cloths.png', 'Clothes'),
                       ],
                     ),
                   ),
@@ -78,7 +117,7 @@ class _MyItemsPageState extends State<MyItemsPage> {
                   GridView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
-                    itemCount: 6,
+                    itemCount: _filteredItems().length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       childAspectRatio: 0.8,
@@ -86,10 +125,11 @@ class _MyItemsPageState extends State<MyItemsPage> {
                       mainAxisSpacing: 10,
                     ),
                     itemBuilder: (context, index) {
+                      var item = _filteredItems()[index];
                       return buildItemCard(
-                        '4th Canal Road Negombo',
-                        'https://via.placeholder.com/150',
-                        'Cloth',
+                        item['title']!,
+                        item['image']!,
+                        item['category']!,
                       );
                     },
                   ),
@@ -97,36 +137,33 @@ class _MyItemsPageState extends State<MyItemsPage> {
               ),
             ),
           ),
-          // Sticky header
           Positioned(
             top: 22,
             left: 0,
             right: 0,
             child: Container(
               color: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
                     icon: Icon(Icons.menu),
-                    onPressed: () {
-                      // Handle menu action here
-                    },
+                    onPressed: () {},
                   ),
                   Row(
                     children: [
                       IconButton(
                         icon: Icon(Icons.notifications),
-                        onPressed: () {
-                          // Handle notifications action here
-                        },
+                        onPressed: () {},
                       ),
                       GestureDetector(
                         onTap: _toggleDropdown,
                         child: CircleAvatar(
                           radius: 20,
-                          backgroundImage: NetworkImage('https://via.placeholder.com/150'),
+                          backgroundImage:
+                              NetworkImage('https://via.placeholder.com/150'),
                         ),
                       ),
                     ],
@@ -135,7 +172,6 @@ class _MyItemsPageState extends State<MyItemsPage> {
               ),
             ),
           ),
-          // Dropdown menu when profile icon is tapped
           if (_isDropdownVisible)
             Positioned(
               top: 80,
@@ -150,18 +186,19 @@ class _MyItemsPageState extends State<MyItemsPage> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text('John Doe', style: TextStyle(fontWeight: FontWeight.bold)),
+                        child: Text('John Doe',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text('john.doe@example.com', style: TextStyle(color: Colors.grey)),
+                        child: Text('john.doe@example.com',
+                            style: TextStyle(color: Colors.grey)),
                       ),
                       Divider(),
                       ListTile(
                         leading: Icon(Icons.person),
                         title: Text('Profile'),
                         onTap: () {
-                          // Navigate to Profile Page
                           _toggleDropdown();
                         },
                       ),
@@ -169,7 +206,6 @@ class _MyItemsPageState extends State<MyItemsPage> {
                         leading: Icon(Icons.settings),
                         title: Text('Settings'),
                         onTap: () {
-                          // Navigate to Settings Page
                           _toggleDropdown();
                         },
                       ),
@@ -177,7 +213,6 @@ class _MyItemsPageState extends State<MyItemsPage> {
                         leading: Icon(Icons.logout),
                         title: Text('Logout'),
                         onTap: () {
-                          // Handle Logout Action
                           _logout(context);
                         },
                       ),
@@ -192,20 +227,44 @@ class _MyItemsPageState extends State<MyItemsPage> {
   }
 
   Widget buildCategoryImage(String imagePath, String label) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: Column(
-        children: [
-          CircleAvatar(
-            radius: 30,
-            backgroundColor: Colors.lightGreen[200],
-            backgroundImage: AssetImage(imagePath),
-          ),
-          SizedBox(height: 8),
-          Text(label),
-        ],
+    bool isSelected = _selectedCategory == label;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedCategory = label;
+        });
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Column(
+          children: [
+            CircleAvatar(
+              radius: 30,
+              backgroundColor:
+                  isSelected ? Colors.green[200] : Colors.lightGreen[200],
+              backgroundImage: AssetImage(imagePath),
+            ),
+            SizedBox(height: 8),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? Colors.green : Colors.black,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  List<Map<String, String>> _filteredItems() {
+    if (_selectedCategory == null) {
+      return items;
+    }
+    return items
+        .where((item) => item['category'] == _selectedCategory)
+        .toList();
   }
 
   Widget buildItemCard(String title, String imageUrl, String category) {

@@ -3,14 +3,44 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'org_request_form.dart'; // Import your org_request_form.dart
 
-class MyItemsPage extends StatefulWidget {
+class OrgItemsPage extends StatefulWidget {
   @override
   _MyItemsPageState createState() => _MyItemsPageState();
 }
 
-class _MyItemsPageState extends State<MyItemsPage> {
+class _MyItemsPageState extends State<OrgItemsPage> {
   bool _isDropdownVisible = false;
   String? _selectedCategory;
+  User? user;
+  Future<Map<String, dynamic>?>? _userDataFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    user = FirebaseAuth.instance.currentUser;
+    _userDataFuture = fetchUserData();
+  }
+
+  Future<Map<String, dynamic>?> fetchUserData() async {
+    try {
+      if (user != null) {
+        DocumentSnapshot snapshot = await FirebaseFirestore.instance
+            .collection('organizations')
+            .doc(user!.uid)
+            .get();
+
+        if (snapshot.exists) {
+          return snapshot.data() as Map<String, dynamic>;
+        }
+      }
+    } catch (e) {
+      print("Error fetching user data: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching user data.')),
+      );
+    }
+    return null;
+  }
 
   void _toggleDropdown() {
     setState(() {
@@ -38,166 +68,202 @@ class _MyItemsPageState extends State<MyItemsPage> {
 
     final snapshot = await FirebaseFirestore.instance
         .collection('requests')
-        .where('userId', isEqualTo: user.uid) // Filter by the current user ID
+        .where('userId', isEqualTo: user.uid)
         .get();
 
     return snapshot.docs
-        .map((doc) => doc.data() as Map<String, dynamic>)
+        .map((doc) => {
+              ...doc.data(),
+              'docId': doc.id, // Include the document ID for deletion
+            })
         .toList();
+  }
+
+  Future<void> _deleteRequest(String docId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('requests')
+          .doc(docId)
+          .delete();
+      setState(() {}); // Refresh the UI after deletion
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Request deleted successfully!')),
+      );
+    } catch (e) {
+      print('Error deleting request: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete request. Please try again.')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          SizedBox(height: 40), // Add space above the custom AppBar
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
+    return FutureBuilder<Map<String, dynamic>?>(
+      future: _userDataFuture,
+      builder: (context, snapshot) {
+        return Scaffold(
+          body: Column(
+            children: [
+              SizedBox(height: 40), // Add space above the custom AppBar
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    IconButton(
-                      icon: Icon(Icons.menu),
-                      onPressed: () {
-                        // Handle menu action here
-                      },
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      'Request Donations',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.notifications),
-                      onPressed: () {
-                        // Handle notifications action here
-                      },
-                    ),
-                    GestureDetector(
-                      onTap: _toggleDropdown,
-                      child: CircleAvatar(
-                        radius: 20,
-                        backgroundImage:
-                            NetworkImage('https://via.placeholder.com/150'),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 24), // Add space above the categories
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          buildCategoryImage(
-                              'assets/images/stationery.png', 'Stationery'),
-                          buildCategoryImage(
-                              'assets/images/shoes.png', 'Shoes'),
-                          buildCategoryImage(
-                              'assets/images/electronics.png', 'Electronics'),
-                          buildCategoryImage('assets/images/bags.png', 'Bags'),
-                          buildCategoryImage('assets/images/food.png', 'Food'),
-                          buildCategoryImage(
-                              'assets/images/furniture.png', 'Furniture'),
-                          buildCategoryImage(
-                              'assets/images/cloths.png', 'Clothes'),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    FutureBuilder<List<Map<String, dynamic>>>(
-                      future: _fetchDonationRequests(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
-                        }
-                        if (snapshot.hasError) {
-                          return Center(
-                              child: Text('Error: ${snapshot.error}'));
-                        }
-                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return Center(
-                              child: Text('No donation requests found.'));
-                        }
-
-                        final donationRequests = snapshot.data!;
-                        // Filter the donation requests based on the selected category
-                        final filteredRequests = _selectedCategory != null
-                            ? donationRequests
-                                .where((request) =>
-                                    request['category'] == _selectedCategory)
-                                .toList()
-                            : donationRequests;
-
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: filteredRequests.length,
-                          itemBuilder: (context, index) {
-                            final request = filteredRequests[index];
-                            final title = request['itemName'] ?? 'Unknown Item';
-                            final imageUrl = request['imageUrl'] ??
-                                'https://via.placeholder.com/150';
-                            final category = request['category'] ?? 'Other';
-                            final description =
-                                request['description'] ?? 'No Description';
-                            final quantity = request['quantity'] ?? 0;
-
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 15.0),
-                              child: buildItemCard(title, imageUrl, category,
-                                  description, quantity),
-                            );
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.menu),
+                          onPressed: () {
+                            // Handle menu action here
                           },
-                        );
-                      },
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Request Donations',
+                          style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green[900]),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.notifications),
+                          onPressed: () {
+                            // Handle notifications action here
+                          },
+                        ),
+                        GestureDetector(
+                          onTap: _toggleDropdown,
+                          child: CircleAvatar(
+                            radius: 20,
+                            backgroundImage: snapshot.hasData &&
+                                    snapshot.data?['logoUrl'] != null
+                                ? NetworkImage(snapshot.data!['logoUrl'])
+                                : AssetImage('assets/images/default_avatar.png')
+                                    as ImageProvider,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-            ),
+              SizedBox(height: 24), // Add space above the categories
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              buildCategoryImage(
+                                  'assets/images/stationery.png', 'Stationery'),
+                              buildCategoryImage(
+                                  'assets/images/shoes.png', 'Shoes'),
+                              buildCategoryImage(
+                                  'assets/images/electronics.png',
+                                  'Electronics'),
+                              buildCategoryImage(
+                                  'assets/images/bags.png', 'Bags'),
+                              buildCategoryImage(
+                                  'assets/images/food.png', 'Food'),
+                              buildCategoryImage(
+                                  'assets/images/furniture.png', 'Furniture'),
+                              buildCategoryImage(
+                                  'assets/images/cloths.png', 'Clothes'),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        FutureBuilder<List<Map<String, dynamic>>>(
+                          future: _fetchDonationRequests(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator());
+                            }
+                            if (snapshot.hasError) {
+                              return Center(
+                                  child: Text('Error: ${snapshot.error}'));
+                            }
+                            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                              return Center(
+                                  child: Text('No donation requests found.'));
+                            }
+
+                            final donationRequests = snapshot.data!;
+                            final filteredRequests = _selectedCategory != null
+                                ? donationRequests
+                                    .where((request) =>
+                                        request['category'] ==
+                                        _selectedCategory)
+                                    .toList()
+                                : donationRequests;
+
+                            return ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: filteredRequests.length,
+                              itemBuilder: (context, index) {
+                                final request = filteredRequests[index];
+                                final title =
+                                    request['itemName'] ?? 'Unknown Item';
+                                final imageUrl = request['imageUrl'] ??
+                                    'https://via.placeholder.com/150';
+                                final category = request['category'] ?? 'Other';
+                                final description =
+                                    request['description'] ?? 'No Description';
+                                final quantity = request['quantity'] ?? 0;
+                                final docId = request['docId'];
+
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 15.0),
+                                  child: buildItemCard(title, imageUrl,
+                                      category, description, quantity, docId),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    DonationRequestForm()), // Navigate to OrgRequestForm
-          );
-        },
-        child: Icon(Icons.add),
-        tooltip: 'Request Donation',
-      ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        DonationRequestForm()), // Navigate to OrgRequestForm
+              );
+            },
+            backgroundColor: Color(0xFFD7F6AB),
+            child: Icon(Icons.add),
+            tooltip: 'Request Donation',
+          ),
+        );
+      },
     );
   }
 
   Widget buildCategoryImage(String imagePath, String label) {
+    bool isSelected = _selectedCategory == label;
     return GestureDetector(
       onTap: () {
         setState(() {
-          _selectedCategory = label; // Set the selected category
+          _selectedCategory = label;
         });
       },
       child: Padding(
@@ -206,11 +272,18 @@ class _MyItemsPageState extends State<MyItemsPage> {
           children: [
             CircleAvatar(
               radius: 30,
-              backgroundColor: Colors.lightGreen[200],
+              backgroundColor:
+                  isSelected ? Colors.green : Colors.lightGreen[200],
               backgroundImage: AssetImage(imagePath),
             ),
             SizedBox(height: 5),
-            Text(label),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? Colors.green : Colors.black,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
           ],
         ),
       ),
@@ -218,7 +291,7 @@ class _MyItemsPageState extends State<MyItemsPage> {
   }
 
   Widget buildItemCard(String title, String imageUrl, String category,
-      String description, int quantity) {
+      String description, int quantity, String docId) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -233,11 +306,10 @@ class _MyItemsPageState extends State<MyItemsPage> {
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
                 imageUrl,
-                height: 80, // Set a small square size for the image
+                height: 80,
                 width: 80,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
-                  // Fallback image if the network image fails
                   return Container(
                     height: 80,
                     width: 80,
@@ -275,6 +347,12 @@ class _MyItemsPageState extends State<MyItemsPage> {
                   ),
                 ],
               ),
+            ),
+            IconButton(
+              icon: Icon(Icons.delete, color: Colors.red),
+              onPressed: () {
+                _deleteRequest(docId);
+              },
             ),
           ],
         ),
