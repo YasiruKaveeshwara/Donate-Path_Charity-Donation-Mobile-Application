@@ -21,7 +21,8 @@ class _LoginPageState extends State<LoginPage> {
           email: _emailController.text.trim(),
           password: _passwordController.text,
         );
-        // No need to navigate, AuthWrapper will handle it
+        // Navigate to home page after successful login
+        Navigator.of(context).pushReplacementNamed('/home');
       } on FirebaseAuthException catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: ${e.message}')),
@@ -68,6 +69,16 @@ class _LoginPageState extends State<LoginPage> {
                   );
                 },
                 child: Text('Don\'t have an account? Sign Up'),
+              ),
+              TextButton(
+                onPressed: () {
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(builder: (context) => OrgSignupPage()),
+                  // );
+                },
+                child: Text(
+                    'If an organization without an account? Organization Signup'),
               ),
             ],
           ),

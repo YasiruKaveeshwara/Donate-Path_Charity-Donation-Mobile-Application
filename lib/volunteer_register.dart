@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'volunteer_dashboard.dart'; // Make sure to import your dashboard page
 
 class VolunteerRegisterPage extends StatefulWidget {
   const VolunteerRegisterPage({super.key});
@@ -11,16 +12,21 @@ class VolunteerRegisterPage extends StatefulWidget {
 
 class _VolunteerRegisterPageState extends State<VolunteerRegisterPage> {
   final _formKey = GlobalKey<FormState>();
-  
-  // Controllers to hold user input
-  final TextEditingController _fullNameController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _nicController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  
-  String _gender = 'Male'; // Default gender option
+  String _selectedDistrict = '';
+  String _gender = 'Male';
 
-  // Firebase Firestore instance
+  final List<String> _districts = [
+    'Ampara', 'Anuradhapura', 'Badulla', 'Batticaloa', 'Colombo', 'Galle',
+    'Gampaha', 'Hambantota', 'Jaffna', 'Kalutara', 'Kandy', 'Kegalle',
+    'Kilinochchi', 'Kurunegala', 'Mannar', 'Matale', 'Matara', 'Monaragala',
+    'Mullaitivu', 'Nuwara Eliya', 'Polonnaruwa', 'Puttalam', 'Ratnapura',
+    'Trincomalee', 'Vavuniya',
+  ];
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -30,47 +36,42 @@ class _VolunteerRegisterPageState extends State<VolunteerRegisterPage> {
     _fetchCurrentUserData();
   }
 
-  // Function to fetch current user data
   Future<void> _fetchCurrentUserData() async {
     User? user = _auth.currentUser;
     if (user != null) {
-      // Automatically fill the full name from the user's display name
       setState(() {
-        _fullNameController.text = user.displayName ?? ''; // Use displayName to fill in the full name
+        _nameController.text = user.displayName ?? '';
       });
-      
-      // Optionally, you could also fetch more user data from Firestore if needed
-      // DocumentSnapshot userData = await _firestore.collection('users').doc(user.uid).get();
-      // Additional data handling can go here if necessary
     } else {
       print('No user is currently signed in.');
     }
   }
 
-  // Function to register as a volunteer
   Future<void> _registerVolunteer() async {
     if (_formKey.currentState!.validate()) {
       try {
         User? user = _auth.currentUser;
         if (user != null) {
-          // Get user's unique UID from Firebase
           String uid = user.uid;
 
-          // Add user volunteer details to Firestore database
-          await _firestore.collection('volunteers').doc(uid).set({
-            'fullName': _fullNameController.text.trim(), // Save new name if edited
+          await _firestore.collection('users').doc(uid).set({
+            'name': _nameController.text.trim(),
             'nic': _nicController.text.trim(),
             'age': int.parse(_ageController.text.trim()),
             'gender': _gender,
             'address': _addressController.text.trim(),
-            'userType': 'volunteer', // upgrading user type
+            'district': _selectedDistrict,
+            'userType': 'volunteer',
           });
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Registered as a Volunteer successfully!')),
           );
 
-          // Navigate to another page or reset form (optional)
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const VolunteerDashboard()),
+            (Route<dynamic> route) => false,
+          );
         }
       } catch (e) {
         print('Error: $e');
@@ -93,9 +94,8 @@ class _VolunteerRegisterPageState extends State<VolunteerRegisterPage> {
           key: _formKey,
           child: ListView(
             children: [
-              // Full Name
               TextFormField(
-                controller: _fullNameController,
+                controller: _nameController,
                 decoration: const InputDecoration(
                   labelText: 'Full Name',
                   border: OutlineInputBorder(),
@@ -108,8 +108,6 @@ class _VolunteerRegisterPageState extends State<VolunteerRegisterPage> {
                 },
               ),
               const SizedBox(height: 16),
-
-              // NIC
               TextFormField(
                 controller: _nicController,
                 decoration: const InputDecoration(
@@ -124,8 +122,6 @@ class _VolunteerRegisterPageState extends State<VolunteerRegisterPage> {
                 },
               ),
               const SizedBox(height: 16),
-
-              // Age
               TextFormField(
                 controller: _ageController,
                 keyboardType: TextInputType.number,
@@ -144,8 +140,6 @@ class _VolunteerRegisterPageState extends State<VolunteerRegisterPage> {
                 },
               ),
               const SizedBox(height: 16),
-
-              // Gender
               DropdownButtonFormField<String>(
                 value: _gender,
                 items: const [
@@ -163,8 +157,6 @@ class _VolunteerRegisterPageState extends State<VolunteerRegisterPage> {
                 ),
               ),
               const SizedBox(height: 16),
-
-              // Address
               TextFormField(
                 controller: _addressController,
                 decoration: const InputDecoration(
@@ -178,9 +170,32 @@ class _VolunteerRegisterPageState extends State<VolunteerRegisterPage> {
                   return null;
                 },
               ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: _selectedDistrict.isEmpty ? null : _selectedDistrict,
+                items: _districts.map((district) {
+                  return DropdownMenuItem(
+                    value: district,
+                    child: Text(district),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedDistrict = value!;
+                  });
+                },
+                decoration: const InputDecoration(
+                  labelText: 'District',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null) {
+                    return 'Please select a district';
+                  }
+                  return null;
+                },
+              ),
               const SizedBox(height: 24),
-
-              // Register button
               ElevatedButton(
                 onPressed: _registerVolunteer,
                 child: const Text('Register as Volunteer'),

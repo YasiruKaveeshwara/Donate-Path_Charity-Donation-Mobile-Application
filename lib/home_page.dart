@@ -1,66 +1,17 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'my_items_page.dart';
-import 'side_menu.dart';
+import 'package:flutter/material.dart';
+import 'main_layout.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
-
-  // List of pages corresponding to each bottom navigation bar item
-  final List<Widget> _pages = [
-    const HomeContent(),
-    const Center(child: Text('Orphanage Page Content')),
-    const Center(child: Text('Events Page Content')),
-    const MyItemsPage(),
-    const Center(child: Text('Profile Page Content')),
-  ];
-
-  // Handler for bottom navigation bar tap
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: SideMenu(),
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.house_siding), // Orphanage
-            label: 'Orphanages',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.event),
-            label: 'Events',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.inventory), // My Items
-            label: 'My Items',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-        selectedItemColor: Colors.green,
-        unselectedItemColor: Colors.grey,
-      ),
+    return MainLayout(
+      selectedIndex: 0, // Index for the 'Home' tab
+      headerText: 'WELCOME', // Dynamic header text for the Home Page
+      profileImage: '',
+      child: const HomeContent(), // The main content of the Home Page
     );
   }
 }
@@ -99,7 +50,7 @@ class _HomeContentState extends State<HomeContent> {
       children: [
         // Main content with space for the sticky header
         Padding(
-          padding: const EdgeInsets.only(top: 80.0), // Space for sticky header
+          padding: const EdgeInsets.only(top: 30.0), // Space for sticky header
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -111,6 +62,8 @@ class _HomeContentState extends State<HomeContent> {
                   'assets/images/donate_items.jpg',
                   () {
                     // Navigate to Donate Items page or action
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, '/donate_page');
                   },
                 ),
                 const SizedBox(height: 20),
@@ -120,6 +73,8 @@ class _HomeContentState extends State<HomeContent> {
                   'assets/images/stationery.png',
                   () {
                     // Navigate to Items page or action
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, '/all_items');
                   },
                 ),
                 const SizedBox(height: 20),
@@ -129,8 +84,7 @@ class _HomeContentState extends State<HomeContent> {
                     SectionCard(
                       title: 'Caring Hearts',
                       imagePath: 'assets/images/orphanage.png',
-                      onTap: () {
-                      },
+                      onTap: () {},
                     ),
                     SectionCard(
                       title: 'Tender Care',
@@ -166,56 +120,6 @@ class _HomeContentState extends State<HomeContent> {
           ),
         ),
         // Sticky header with profile icon
-        Positioned(
-          top: 22,
-          left: 0,
-          right: 0,
-          child: Container(
-            color: Colors.white,
-            padding:
-                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.menu),
-                      onPressed: () {
-                        Scaffold.of(context).openDrawer();
-                      },
-                    ),
-                    const Text(
-                      'WELCOME',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.notifications),
-                      onPressed: () {
-                        // Notifications functionality
-                      },
-                    ),
-                    GestureDetector(
-                      onTap: _toggleDropdown,
-                      child: const CircleAvatar(
-                        radius: 20,
-                        backgroundImage:
-                            NetworkImage('https://via.placeholder.com/150'),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
         // Dropdown menu when profile icon is tapped
         if (_isDropdownVisible)
           Positioned(
@@ -223,47 +127,6 @@ class _HomeContentState extends State<HomeContent> {
             right: 16,
             child: Material(
               elevation: 5,
-              child: Container(
-                width: 200,
-                color: Colors.white,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text('John Doe',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text('john.doe@example.com',
-                          style: TextStyle(color: Colors.grey)),
-                    ),
-                    const Divider(),
-                    ListTile(
-                      leading: const Icon(Icons.person),
-                      title: const Text('Profile'),
-                      onTap: () {
-                        // Navigate to Profile Page
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.settings),
-                      title: const Text('Settings'),
-                      onTap: () {
-                        // Navigate to Settings Page
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.logout),
-                      title: const Text('Logout'),
-                      onTap: () {
-                        _logout(context);
-                      },
-                    ),
-                  ],
-                ),
-              ),
             ),
           ),
       ],
@@ -272,8 +135,8 @@ class _HomeContentState extends State<HomeContent> {
 }
 
 // Reusable Widget for Picture Button
-Widget buildPictureButton(
-    BuildContext context, String label, String imagePath, VoidCallback onPressed) {
+Widget buildPictureButton(BuildContext context, String label, String imagePath,
+    VoidCallback onPressed) {
   return GestureDetector(
     onTap: onPressed,
     child: Container(
@@ -293,7 +156,7 @@ Widget buildPictureButton(
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Colors.white, // Ensure text is readable over image
+            color: Colors.white, // Ensure text is readable over the image
           ),
         ),
       ),
