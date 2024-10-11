@@ -1,7 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
@@ -56,20 +56,16 @@ class _OrgSignupPageState extends State<OrgSignupPage> {
   Future<void> _orgSignUp() async {
     if (_formKey.currentState!.validate()) {
       try {
-        // Create user with email and password
         UserCredential userCredential =
             await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
 
-        // Update user profile with name
         await userCredential.user!.updateDisplayName(_nameController.text);
 
-        // Upload the organization logo
         String? logoUrl = await _uploadLogo(userCredential.user!);
 
-        // Save user information in Firestore
         await FirebaseFirestore.instance
             .collection('organizations')
             .doc(userCredential.user!.uid)
@@ -81,18 +77,15 @@ class _OrgSignupPageState extends State<OrgSignupPage> {
           'communityEngagement': _communityEngagementController.text.trim(),
           'phone': _phoneController.text.trim(),
           'address': _addressController.text.trim(),
-          'logoUrl': logoUrl, // Save logo URL in Firestore
+          'logoUrl': logoUrl,
         });
 
-        // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Sign up successful! Please sign in.')),
         );
 
-        // Navigate to sign-in page
         Navigator.of(context).pushReplacementNamed('/signin');
       } on FirebaseAuthException catch (e) {
-        // Display error message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: ${e.message}')),
         );
@@ -103,7 +96,10 @@ class _OrgSignupPageState extends State<OrgSignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Organization Sign Up')),
+      appBar: AppBar(
+        title: Text('Organization Sign Up'),
+        backgroundColor: Colors.lightGreen[200],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -112,119 +108,132 @@ class _OrgSignupPageState extends State<OrgSignupPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Name field
-                TextFormField(
+                _buildTextField(
                   controller: _nameController,
-                  decoration: InputDecoration(labelText: 'Organization Name'),
-                  validator: (value) => value!.isEmpty
-                      ? 'Please enter your Organization name'
-                      : null,
+                  label: 'Organization Name',
+                  icon: Icons.business,
                 ),
                 SizedBox(height: 20),
-
-                // Email field
-                TextFormField(
+                _buildTextField(
                   controller: _emailController,
-                  decoration: InputDecoration(labelText: 'Organization Email'),
-                  validator: (value) => value!.isEmpty
-                      ? 'Please enter your Organization email'
-                      : null,
+                  label: 'Organization Email',
+                  icon: Icons.email,
+                  keyboardType: TextInputType.emailAddress,
                 ),
                 SizedBox(height: 20),
-
-                // Password field
-                TextFormField(
+                _buildTextField(
                   controller: _passwordController,
-                  decoration:
-                      InputDecoration(labelText: 'Organization Password'),
+                  label: 'Organization Password',
+                  icon: Icons.lock,
                   obscureText: true,
-                  validator: (value) => value!.isEmpty
-                      ? 'Please enter your Organization password'
-                      : null,
                 ),
                 SizedBox(height: 20),
-
-                // Vision field
-                TextFormField(
+                _buildTextField(
                   controller: _visionController,
-                  decoration: InputDecoration(labelText: 'Organization Vision'),
-                  validator: (value) => value!.isEmpty
-                      ? 'Please enter your Organization vision'
-                      : null,
+                  label: 'Organization Vision',
+                  icon: Icons.visibility,
                 ),
                 SizedBox(height: 20),
-
-                // Mission field
-                TextFormField(
+                _buildTextField(
                   controller: _missionController,
-                  decoration:
-                      InputDecoration(labelText: 'Organization Mission'),
-                  validator: (value) => value!.isEmpty
-                      ? 'Please enter your Organization mission'
-                      : null,
+                  label: 'Organization Mission',
+                  icon: Icons.lightbulb_outline, // Changed icon here
                 ),
                 SizedBox(height: 20),
-
-                // Community Engagement field
-                TextFormField(
+                _buildTextField(
                   controller: _communityEngagementController,
-                  decoration:
-                      InputDecoration(labelText: 'Community Engagement'),
-                  validator: (value) => value!.isEmpty
-                      ? 'Please enter your community engagement activities'
-                      : null,
+                  label: 'Community Engagement',
+                  icon: Icons.people,
                 ),
                 SizedBox(height: 20),
-
-                // Phone field
-                TextFormField(
+                _buildTextField(
                   controller: _phoneController,
-                  decoration: InputDecoration(labelText: 'Phone Number'),
+                  label: 'Phone Number',
+                  icon: Icons.phone,
                   keyboardType: TextInputType.phone,
-                  validator: (value) =>
-                      value!.isEmpty ? 'Please enter a phone number' : null,
                 ),
                 SizedBox(height: 20),
-
-                // Address field
-                TextFormField(
+                _buildTextField(
                   controller: _addressController,
-                  decoration:
-                      InputDecoration(labelText: 'Organization Address'),
-                  validator: (value) => value!.isEmpty
-                      ? 'Please enter your Organization address'
-                      : null,
+                  label: 'Organization Address',
+                  icon: Icons.location_on,
                 ),
                 SizedBox(height: 20),
-
-                // Organization Logo field
                 Row(
                   children: [
-                    ElevatedButton(
+                    ElevatedButton.icon(
                       onPressed: _pickLogo,
-                      child: Text('Select Logo'),
+                      icon: Icon(Icons.upload),
+                      label: Text('Select Logo'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green[50],
+                      ),
                     ),
                     SizedBox(width: 10),
-                    if (_selectedLogo != null)
-                      Text('Logo selected',
-                          style: TextStyle(color: Colors.green))
-                    else
-                      Text('No logo selected',
-                          style: TextStyle(color: Colors.red)),
+                    Expanded(
+                      child: Text(
+                        _selectedLogo != null
+                            ? 'Logo selected'
+                            : 'No logo selected',
+                        style: TextStyle(
+                          color:
+                              _selectedLogo != null ? Colors.green : Colors.red,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-                SizedBox(height: 20),
-
-                // Sign Up button
+                SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: _orgSignUp,
                   child: Text('Sign Up as an Organization'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.lightGreen[800],
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    textStyle: TextStyle(fontSize: 16),
+                  ),
                 ),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
+    bool obscureText = false,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Colors.green),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+              color: Colors.green), // Set the border color when enabled
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+              color:
+                  Colors.lightGreen[600]!), // Set the border color when focused
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        filled: true,
+        fillColor: Colors.grey[200],
+      ),
+      keyboardType: keyboardType,
+      obscureText: obscureText,
+      validator: (value) => value!.isEmpty ? 'Please enter $label' : null,
     );
   }
 }

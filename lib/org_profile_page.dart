@@ -215,7 +215,7 @@ class _OrgProfilePageState extends State<OrgProfilePage>
                     ),
                     SizedBox(width: 8),
                     Text(
-                      'Organization Profile',
+                      'Profile',
                       style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,

@@ -20,7 +20,7 @@ class AuthWrapper extends StatelessWidget {
           String result = snapshot.data!.email!.substring(index + 1);
           print(result);
           if (result == "org.com") {
-            print("THis is an Organization");
+            print("This is an Organization");
             return OrgHomePage();
           } else {
             print("This is a user");
