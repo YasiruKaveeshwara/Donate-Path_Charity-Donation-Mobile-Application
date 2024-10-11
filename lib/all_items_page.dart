@@ -29,21 +29,27 @@ class _AllItemsPageState extends State<AllItemsPage> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    _buildCategoryIcon('All', Icons.all_inclusive),
-                    _buildCategoryIcon('Stationary', Icons.note),
-                    _buildCategoryIcon('Shoes', Icons.directions_run),
-                    _buildCategoryIcon('Electronics', Icons.devices),
-                    _buildCategoryIcon('Bags', Icons.backpack),
-                    _buildCategoryIcon('Food', Icons.fastfood),
-                    _buildCategoryIcon('Furniture', Icons.chair),
-                    _buildCategoryIcon('Clothes', Icons.checkroom),
+                    _buildCategoryIcon('All', Icons.all_inclusive, "all.png"),
+                    _buildCategoryIcon(
+                        'Stationary', Icons.note, "stationery.png"),
+                    _buildCategoryIcon(
+                        'Shoes', Icons.directions_run, "shoes.png"),
+                    _buildCategoryIcon(
+                        'Electronics', Icons.devices, "electronics.png"),
+                    _buildCategoryIcon('Bags', Icons.backpack, "bags.png"),
+                    _buildCategoryIcon('Food', Icons.fastfood, "food.png"),
+                    _buildCategoryIcon(
+                        'Furniture', Icons.chair, "furniture.png"),
+                    _buildCategoryIcon(
+                        'Clothes', Icons.checkroom, "cloths.png"),
                   ],
                 ),
               ),
               SizedBox(height: 20),
               Expanded(
                 child: StreamBuilder<QuerySnapshot>(
-                  stream: _firestore.collectionGroup('items')
+                  stream: _firestore
+                      .collectionGroup('items')
                       .orderBy('timestamp', descending: true)
                       .snapshots(),
                   builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -63,7 +69,9 @@ class _AllItemsPageState extends State<AllItemsPage> {
                     List<QueryDocumentSnapshot> allItems = snapshot.data!.docs;
 
                     if (_selectedCategory != 'All') {
-                      allItems = allItems.where((doc) => doc['category'] == _selectedCategory).toList();
+                      allItems = allItems
+                          .where((doc) => doc['category'] == _selectedCategory)
+                          .toList();
                     }
 
                     return GridView.builder(
@@ -76,14 +84,18 @@ class _AllItemsPageState extends State<AllItemsPage> {
                       ),
                       itemCount: allItems.length,
                       itemBuilder: (context, index) {
-                        final item = allItems[index].data() as Map<String, dynamic>;
+                        final item =
+                            allItems[index].data() as Map<String, dynamic>;
                         return Card(
+                          elevation: 3,
+                          color: Colors.lightGreen[100],
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Expanded(
                                 child: ClipRRect(
-                                  borderRadius: BorderRadius.vertical(top: Radius.circular(4.0)),
+                                  borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(4.0)),
                                   child: Image.network(
                                     item['item_images'],
                                     fit: BoxFit.cover,
@@ -101,7 +113,8 @@ class _AllItemsPageState extends State<AllItemsPage> {
                                   children: [
                                     Text(
                                       "Name: ${item['item_name']}",
-                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     Text(
@@ -110,7 +123,9 @@ class _AllItemsPageState extends State<AllItemsPage> {
                                     ),
                                     Text(
                                       item['category'],
-                                      style: TextStyle(color: Colors.grey[700]),
+                                      style: TextStyle(
+                                          color: Colors.grey[700],
+                                          fontWeight: FontWeight.bold),
                                     ),
                                   ],
                                 ),
@@ -130,7 +145,7 @@ class _AllItemsPageState extends State<AllItemsPage> {
     );
   }
 
-  Widget _buildCategoryIcon(String category, IconData icon) {
+  Widget _buildCategoryIcon(String category, IconData icon, String imageName) {
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -143,12 +158,19 @@ class _AllItemsPageState extends State<AllItemsPage> {
           children: [
             CircleAvatar(
               radius: 30,
-              backgroundColor: _selectedCategory == category ? Colors.blue : Colors.grey[300],
-              child: Icon(
-                icon,
-                size: 30,
-                color: Colors.black,
-              ),
+              backgroundColor: _selectedCategory == category
+                  ? Colors.lightGreen[200]
+                  : Colors.grey[300],
+              backgroundImage:
+                  AssetImage('assets/images/$imageName'), // Add this line
+              child: _selectedCategory == category
+                  ? null
+                  : Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.3),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
             ),
             SizedBox(height: 5),
             Text(category),

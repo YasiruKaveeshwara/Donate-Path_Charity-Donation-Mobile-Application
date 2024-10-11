@@ -15,7 +15,8 @@ class _DonatePageState extends State<DonatePage> {
   final TextEditingController _itemNameController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _donatorNameController = TextEditingController();
-  final TextEditingController _contactNumberController = TextEditingController();
+  final TextEditingController _contactNumberController =
+      TextEditingController();
 
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -25,7 +26,13 @@ class _DonatePageState extends State<DonatePage> {
   XFile? _pickedImage;
 
   final List<String> _categories = [
-    'Stationary', 'Shoes', 'Electronics', 'Bags', 'Food', 'Furniture', 'Clothes'
+    'Stationary',
+    'Shoes',
+    'Electronics',
+    'Bags',
+    'Food',
+    'Furniture',
+    'Clothes'
   ];
 
   Future<void> _pickImage() async {
@@ -39,22 +46,27 @@ class _DonatePageState extends State<DonatePage> {
   Future<void> _addDonation() async {
     final User? user = _auth.currentUser;
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('User not logged in!'))
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('User not logged in!')));
       return;
     }
 
     if (_pickedImage != null && _categoryValue != null) {
       try {
         // Step 1: Upload image to Firebase Storage
-        final Reference storageRef = _storage.ref().child('donations/${DateTime.now().millisecondsSinceEpoch}_${_pickedImage!.name}');
-        final UploadTask uploadTask = storageRef.putFile(File(_pickedImage!.path));
+        final Reference storageRef = _storage.ref().child(
+            'donations/${DateTime.now().millisecondsSinceEpoch}_${_pickedImage!.name}');
+        final UploadTask uploadTask =
+            storageRef.putFile(File(_pickedImage!.path));
         final TaskSnapshot snapshot = await uploadTask.whenComplete(() => {});
         final String downloadUrl = await snapshot.ref.getDownloadURL();
 
         // Step 2: Store item data in Firestore
-        await _firestore.collection('donations').doc(user.uid).collection('items').add({
+        await _firestore
+            .collection('donations')
+            .doc(user.uid)
+            .collection('items')
+            .add({
           'item_name': _itemNameController.text,
           'location': _locationController.text,
           'category': _categoryValue,
@@ -65,19 +77,16 @@ class _DonatePageState extends State<DonatePage> {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Donation added successfully!'))
-        );
+            SnackBar(content: Text('Donation added successfully!')));
         _resetFields();
       } catch (e) {
         print('Error: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to add donation!'))
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Failed to add donation!')));
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please select an image and category!'))
-      );
+          SnackBar(content: Text('Please select an image and category!')));
     }
   }
 
@@ -95,74 +104,144 @@ class _DonatePageState extends State<DonatePage> {
   @override
   Widget build(BuildContext context) {
     return MainLayout(
-        headerText: 'Add Donation',
-        profileImage: '',
-        selectedIndex: 0,
-        child: Padding(
-        padding: const EdgeInsets.all(40.0),
+      headerText: 'Add Donation',
+      profileImage: '',
+      selectedIndex: 0,
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextField(
-                controller: _itemNameController,
-                decoration: InputDecoration(labelText: 'Item Name'),
-              ),
-              TextField(
-                controller: _locationController,
-                decoration: InputDecoration(labelText: 'Location'),
-              ),
-              TextField(
-                controller: _donatorNameController,
-                decoration: InputDecoration(labelText: 'Donator Name'),
-              ),
-              TextField(
-                controller: _contactNumberController,
-                decoration: InputDecoration(labelText: 'Contact Number'),
-                keyboardType: TextInputType.phone,
-              ),
-              SizedBox(height: 20),
-              DropdownButtonFormField<String>(
-                value: _categoryValue,
-                items: _categories.map((String category) {
-                  return DropdownMenuItem<String>(
-                    value: category,
-                    child: Text(category),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _categoryValue = value;
-                  });
-                },
-                decoration: InputDecoration(labelText: 'Category'),
-              ),
-              SizedBox(height: 20),
-              _pickedImage == null
-                  ? Text('No image selected')
-                  : Image.file(File(_pickedImage!.path)),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _pickImage,
-                child: Text('Pick Image'),
-              ),
-              SizedBox(height: 20),
+              SizedBox(height: 15),
+              _buildTextField(_itemNameController, 'Item Name'),
+              _buildTextField(_locationController, 'Location'),
+              _buildTextField(_donatorNameController, 'Donator Name'),
+              _buildTextField(_contactNumberController, 'Contact Number',
+                  keyboardType: TextInputType.phone),
+              SizedBox(height: 16),
+              _buildDropdown(),
+              SizedBox(height: 24),
+              _buildImagePicker(),
+              SizedBox(height: 32),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  ElevatedButton(
-                    onPressed: _addDonation,
-                    child: Text('Add Donation'),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _addDonation,
+                      child: Text('Add Donation'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.lightGreen,
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
                   ),
-                  ElevatedButton(
-                    onPressed: _resetFields,
-                    child: Text('Cancel'),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _resetFields,
+                      child: Text('Cancel'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white60,
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
+              SizedBox(height: 32),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTextField(TextEditingController controller, String label,
+      {TextInputType? keyboardType}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          filled: true,
+          fillColor: Colors.grey[100],
+        ),
+        keyboardType: keyboardType,
+      ),
+    );
+  }
+
+  Widget _buildDropdown() {
+    return DropdownButtonFormField<String>(
+      value: _categoryValue,
+      items: _categories.map((String category) {
+        return DropdownMenuItem<String>(
+          value: category,
+          child: Text(category),
+        );
+      }).toList(),
+      onChanged: (value) {
+        setState(() {
+          _categoryValue = value;
+        });
+      },
+      decoration: InputDecoration(
+        labelText: 'Category',
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        filled: true,
+        fillColor: Colors.grey[100],
+      ),
+    );
+  }
+
+  Widget _buildImagePicker() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Item Image',
+          style: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black87),
+        ),
+        SizedBox(height: 8),
+        GestureDetector(
+          onTap: _pickImage,
+          child: Container(
+            height: 200,
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.grey[400]!),
+            ),
+            child: _pickedImage == null
+                ? Center(
+                    child: Icon(Icons.add_a_photo,
+                        size: 50, color: Colors.grey[600]),
+                  )
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.file(
+                      File(_pickedImage!.path),
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    ),
+                  ),
+          ),
+        ),
+      ],
     );
   }
 }

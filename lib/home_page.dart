@@ -58,8 +58,8 @@ class _HomeContentState extends State<HomeContent> {
                 const SizedBox(height: 20),
                 buildPictureButton(
                   context,
-                  'DONATE ITEMS',
-                  'assets/images/donate_items.jpg',
+                  '',
+                  'assets/images/donate_two.jpeg',
                   () {
                     // Navigate to Donate Items page or action
                     Navigator.pop(context);
@@ -69,8 +69,8 @@ class _HomeContentState extends State<HomeContent> {
                 const SizedBox(height: 20),
                 buildPictureButton(
                   context,
-                  'ITEMS',
-                  'assets/images/stationery.png',
+                  '',
+                  'assets/images/view_donations.jpeg',
                   () {
                     // Navigate to Items page or action
                     Navigator.pop(context);
@@ -83,12 +83,26 @@ class _HomeContentState extends State<HomeContent> {
                   items: [
                     SectionCard(
                       title: 'Caring Hearts',
-                      imagePath: 'assets/images/orphanage.png',
+                      imagePath: 'assets/images/caring_hearts.jpeg',
                       onTap: () {},
                     ),
                     SectionCard(
-                      title: 'Tender Care',
-                      imagePath: 'assets/images/orphanage.png',
+                      title: 'Guiding stars',
+                      imagePath: 'assets/images/guiding_stars.jpeg',
+                      onTap: () {
+                        // Navigate to Tender Care details or page
+                      },
+                    ),
+                    SectionCard(
+                      title: 'Tender care',
+                      imagePath: 'assets/images/tender_care.jpeg',
+                      onTap: () {
+                        // Navigate to Tender Care details or page
+                      },
+                    ),
+                    SectionCard(
+                      title: 'Kinder hearts',
+                      imagePath: 'assets/images/kinder_hearts.jpeg',
                       onTap: () {
                         // Navigate to Tender Care details or page
                       },
@@ -101,14 +115,48 @@ class _HomeContentState extends State<HomeContent> {
                   items: [
                     SectionCard(
                       title: 'Golden Age',
-                      imagePath: 'assets/images/orphanage.png',
+                      imagePath: 'assets/images/elderly_one.jpeg',
                       onTap: () {
                         // Navigate to Golden Age details or page
                       },
                     ),
                     SectionCard(
                       title: 'Silver Care',
-                      imagePath: 'assets/images/orphanage.png',
+                      imagePath: 'assets/images/elderly_two.jpeg',
+                      onTap: () {
+                        // Navigate to Silver Care details or page
+                      },
+                    ),
+                    SectionCard(
+                      title: 'Peaceful pines',
+                      imagePath: 'assets/images/elderly_three.jpeg',
+                      onTap: () {
+                        // Navigate to Silver Care details or page
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Section(
+                  title: 'Events',
+                  items: [
+                    SectionCard(
+                      title: 'Generosity gata',
+                      imagePath: 'assets/images/event_one.jpeg',
+                      onTap: () {
+                        // Navigate to Golden Age details or page
+                      },
+                    ),
+                    SectionCard(
+                      title: 'Kind Hearts',
+                      imagePath: 'assets/images/event_two.jpeg',
+                      onTap: () {
+                        // Navigate to Silver Care details or page
+                      },
+                    ),
+                    SectionCard(
+                      title: 'Blish Bash',
+                      imagePath: 'assets/images/event_three.jpeg',
                       onTap: () {
                         // Navigate to Silver Care details or page
                       },
@@ -183,9 +231,11 @@ class Section extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: items,
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: items,
+          ),
         ),
       ],
     );
@@ -208,29 +258,44 @@ class SectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: 160,
-        height: 160,
-        decoration: BoxDecoration(
-          color: Colors.grey[300],
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              imagePath,
-              width: 80,
-              height: 80,
+      child: Padding(
+        padding: const EdgeInsets.only(right: 10.0),
+        child: Container(
+          width: 160,
+          height: 160,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            image: DecorationImage(
+              image: AssetImage(imagePath),
+              fit: BoxFit.cover,
             ),
-            const SizedBox(height: 10),
-            Text(
-              title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.transparent,
+                  Colors.black.withOpacity(0.7),
+                ],
               ),
             ),
-          ],
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
