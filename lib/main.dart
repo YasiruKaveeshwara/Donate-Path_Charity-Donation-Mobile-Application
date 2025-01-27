@@ -20,8 +20,6 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => SignUpPage(),
         '/signin': (context) => LoginPage(),
         '/org_signup': (context) => OrgSignupPage(),
-
-        // ... other routes
       },
       theme: ThemeData(
         primarySwatch: Colors.green,

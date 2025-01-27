@@ -108,7 +108,8 @@ class _OrgProfilePageState extends State<OrgProfilePage>
   Future<void> _logout(BuildContext context) async {
     try {
       await _auth.signOut();
-      _toggleDropdown();
+      // Navigate to the login page after logout
+      Navigator.of(context).pushReplacementNamed('/signin');
     } catch (e) {
       print("Error signing out: $e");
       ScaffoldMessenger.of(context).showSnackBar(

@@ -20,7 +20,7 @@ class _LoginPageState extends State<LoginPage> {
           email: _emailController.text.trim(),
           password: _passwordController.text,
         );
-        // No need to navigate, AuthWrapper will handle it
+        // Navigation handled by AuthWrapper
       } on FirebaseAuthException catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: ${e.message}')),

@@ -10,23 +10,28 @@ class AuthWrapper extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
-        print('Hello, World 1');
+        print('Auth state change detected');
 
-        if (snapshot.hasData) {
-          print('Hello, World 3');
-          print(snapshot.data!.displayName);
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
 
-          int index = snapshot.data!.email!.indexOf('@');
-          String result = snapshot.data!.email!.substring(index + 1);
-          print(result);
-          if (result == "org.com") {
-            print("This is an Organization");
+        if (snapshot.hasData && snapshot.data != null) {
+          String email = snapshot.data!.email!;
+          int index = email.indexOf('@');
+          String domain = email.substring(index + 1);
+
+          print('Logged in email domain: $domain');
+
+          if (domain == "org.com") {
+            print("Navigating to OrgHomePage for Organization");
             return OrgHomePage();
           } else {
-            print("This is a user");
+            print("Navigating to HomePage for User");
             return HomePage();
           }
         } else {
+          print("No user logged in. Navigating to LoginPage.");
           return LoginPage();
         }
       },
